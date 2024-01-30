@@ -7,8 +7,6 @@
 }
  .board-container {
     display: grid;
-    grid-template-columns: repeat(6, 1fr);
-    grid-template-rows: repeat(6, 1fr);
     min-width: min(380px, 100%);
     gap: 5px;
     justify-items: center;

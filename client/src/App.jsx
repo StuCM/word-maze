@@ -11,6 +11,13 @@ function App() {
     ['o','w','s','s','d','r'],
     ['w','d','s','o','r','d']
 ]
+  const board2 = [
+    ['w','o','d','r','o'],
+    ['o','s','d','d','w'],
+    ['s','o','w','r','o'],
+    ['r','s','d','o','w'],
+    ['o','w','s','s','d'],
+]
   return (
     <main className='flex flex-col justify-between h-full'>
       <Header />

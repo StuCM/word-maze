@@ -1,9 +1,12 @@
 import Letter from "./Letter";
 
 function Gameboard({ board }) {
-    console.log(board)
+    const gridStyle = {
+        gridTemplateColumns: `repeat(${board[0].length}, 1fr)`,
+        gridTemplateRows: `repeat(${board[0].length}, 1fr)`,
+    }
     return (
-        <section className="board-container">
+        <section className="board-container" style={ gridStyle }>
             { board.map((row) => {
                 return row.map((letter) => {
                     return <Letter text={ letter } />

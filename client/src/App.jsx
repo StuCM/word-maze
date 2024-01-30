@@ -1,6 +1,7 @@
 import './App.css';
 import Header from './components/Header';
 import Gameboard from './components/Gameboard';
+import ScoreUI from './components/ScoreUI'
 
 function App() {
   const board = [
@@ -21,14 +22,13 @@ function App() {
 const word = 'WORDS'
   return (
     <main className='flex flex-col h-full'>
-
       <Header />
       <div className='mt-10'>
       <p className='text-lg'>Todays Word:</p>
       <p className='text-3xl mt-1'>{ word }</p>
       </div>
       <Gameboard board={ board } />
-      <div></div>
+      <ScoreUI />
     </main>
   )
 }

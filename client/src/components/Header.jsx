@@ -7,15 +7,11 @@ function Header() {
 	};
 
 	return (
-		<header className='relative flex justify-between w-full'>
-			<div className='w-full p-3 flex justify-center'>
-                <h1 className='m-auto text-3xl sm:text-4xl'>Word-Maze</h1>
-			</div>
-			<div className='absolute top-3 right-0 flex justify-end'>
-				<button className='ml-auto text-sm sm:text' onClick={openMenu}>
-					<FontAwesomeIcon icon={faBars} />
-				</button>
-			</div>
+		<header className='flex justify-center items-center w-full p-3'>
+			<h1 className='text-3xl sm:text-4xl'>Word-Maze</h1>
+			<button className='absolute right-0 text-lg sm:text-2xl mr-1' onClick={openMenu}>
+				<FontAwesomeIcon icon={faBars} />
+			</button>
 		</header>
 	);
 }

@@ -18,9 +18,15 @@ function App() {
     ['r','s','d','o','w'],
     ['o','w','s','s','d'],
 ]
+const word = 'WORDS'
   return (
-    <main className='flex flex-col justify-between h-full'>
+    <main className='flex flex-col h-full'>
+
       <Header />
+      <div className='mt-10'>
+      <p className='text-lg'>Todays Word:</p>
+      <p className='text-3xl mt-1'>{ word }</p>
+      </div>
       <Gameboard board={ board } />
       <div></div>
     </main>

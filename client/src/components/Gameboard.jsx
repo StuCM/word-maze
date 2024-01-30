@@ -6,7 +6,7 @@ function Gameboard({ board }) {
         gridTemplateRows: `repeat(${board[0].length}, 1fr)`,
     }
     return (
-        <section className="board-container" style={ gridStyle }>
+        <section className="board-container mt-10" style={ gridStyle }>
             { board.map((row) => {
                 return row.map((letter) => {
                     return <Letter text={ letter } />

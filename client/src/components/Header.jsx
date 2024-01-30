@@ -7,13 +7,12 @@ function Header() {
 	};
 
 	return (
-		<header className='flex justify-between w-full'>
-			<div className='w-1/3'></div>
-			<div className='w-1/3 flex justify-center'>
-				<h1 className='m-auto'>Word-Maze</h1>
+		<header className='relative flex justify-between w-full'>
+			<div className='w-full p-3 flex justify-center'>
+                <h1 className='m-auto text-3xl sm:text-4xl'>Word-Maze</h1>
 			</div>
-			<div className='w-1/3 flex justify-end'>
-				<button className='ml-auto' onClick={openMenu}>
+			<div className='absolute top-2 right-0 flex justify-end'>
+				<button className='ml-auto sm:text' onClick={openMenu}>
 					<FontAwesomeIcon icon={faBars} />
 				</button>
 			</div>

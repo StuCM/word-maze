@@ -12,10 +12,11 @@ function App() {
     ['w','d','s','o','r','d']
 ]
   return (
-    <>
+    <main className='flex flex-col justify-between h-full'>
       <Header />
       <Gameboard board={ board } />
-    </>
+      <div></div>
+    </main>
   )
 }
 

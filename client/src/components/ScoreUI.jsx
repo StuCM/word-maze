@@ -2,11 +2,12 @@ import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
-function ScoreUI({ score, attempts }) {
+function ScoreUI({ score, attempts, onReset }) {
 	const [remainingAttempts, setRemainingAttempts] = useState(attempts);
 	score = 325;
 
     const reduceAttempts = () => {
+		onReset()
         return remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0
     }
 

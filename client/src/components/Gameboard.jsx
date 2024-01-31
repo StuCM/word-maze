@@ -6,10 +6,6 @@ function Gameboard({ board }) {
 	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null });
 	const [prevSelected, setPrevSelected] = useState({ row: null, column: null });
 
-    useEffect(() => {
-        console.log("prev", prevSelected, "current", selectedLetter)
-    },[selectedLetter])
-
 	const handleSelectLetter = (row, column) => {
 		setSelectedLetter((prevState) => {
             if(!prevState) return;

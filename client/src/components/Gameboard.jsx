@@ -1,18 +1,63 @@
 import Letter from './Letter';
-import { useState, useRef, useEffect } from 'react';
+import Line from './Line';
+import React, { useState, useRef, useEffect } from 'react';
 
 function Gameboard({ board }) {
+	//state
 	const [currentHue, setCurrentHue] = useState(null);
-	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null });
-	const [prevSelected, setPrevSelected] = useState({ row: null, column: null });
+	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null });
+	const [prevSelected, setPrevSelected] = useState({ row: null, column: null, x: null, y: null, height: null });
+	const [lines, setLines] = useState([]);
 
-	const handleSelectLetter = (row, column) => {
+	//hooks
+	useEffect(() => {
+		const newLine = createLine();
+		if (newLine) {
+			setLines([...lines, newLine]);
+		}
+	}, [selectedLetter]);
+
+	//variables
+	const handleSelectLetter = (row, column, x, y, height) => {
 		setSelectedLetter((prevState) => {
-            if(!prevState) return;
+			if (!prevState) return;
 			setPrevSelected(prevState);
-            return { row, column };
+			return { row, column, x, y, height };
 		});
-		
+	};
+
+	const calculateLinePoint = (axis, distance, isStart = false) => {
+		if (isStart) {
+			return distance < 0 ? prevSelected[axis] + prevSelected.height : prevSelected[axis];
+		} else {
+			return distance < 0 ? selectedLetter[axis] : selectedLetter[axis] + prevSelected.height;
+		}
+	};
+
+	const createLine = () => {
+		//return on first selection
+		if (!prevSelected.x) return;
+
+		let startX;
+		let startY;
+		let endX;
+		let endY;
+
+		if (prevSelected.column === selectedLetter.column) {
+			startX = selectedLetter.x + selectedLetter.height / 2;
+			const distance = prevSelected.y - selectedLetter.y;
+
+			startY = calculateLinePoint('y', distance, true);
+			endX = startX;
+			endY = calculateLinePoint('y', distance);
+		} else {
+			startY = selectedLetter.y + selectedLetter.height / 2;
+			const distance = prevSelected.x - selectedLetter.x;
+			startX = calculateLinePoint('x', distance, true);
+			endY = startY;
+			endX = calculateLinePoint('x', distance);
+		}
+		return { startX, startY, endX, endY };
 	};
 
 	const gridStyle = {
@@ -20,24 +65,44 @@ function Gameboard({ board }) {
 		gridTemplateRows: `repeat(${board[0].length}, 1fr)`,
 	};
 	return (
-		<section className='board-container mt-10' style={gridStyle} aria-label='gameboard'>
-			{board.map((row, rowIndex) => {
-				return row.map((letter, columnIndex) => {
+		<>
+			<section className='board-container mt-10' style={gridStyle} aria-label='gameboard'>
+				{board.map((row, rowIndex) => {
 					return (
-						<Letter
-							text={letter}
-							currentHue={currentHue}
-							setCurrentHue={setCurrentHue}
-							selectedLetter={selectedLetter}
-							handleSelectLetter={handleSelectLetter}
-                            prevSelected={prevSelected}
-							row={rowIndex}
-							column={columnIndex}
-						/>
+						<React.Fragment key={rowIndex}>
+							{row.map((letter, columnIndex) => {
+								return (
+									<Letter
+										text={letter}
+										row={rowIndex}
+										column={columnIndex}
+										handleSelectLetter={handleSelectLetter}
+										selectedLetter={selectedLetter}
+										prevSelected={prevSelected}
+										currentHue={currentHue}
+										setCurrentHue={setCurrentHue}
+										key={`${rowIndex}-${columnIndex}`}
+									/>
+								);
+							})}
+						</React.Fragment>
 					);
-				});
-			})}
-		</section>
+				})}
+
+				{lines.length > 0 &&
+					lines.map((line, index) => {
+						return (
+							<Line
+								startX={line.startX}
+								startY={line.startY}
+								endX={line.endX}
+								endY={line.endY}
+								key={index}
+							/>
+						);
+					})}
+			</section>
+		</>
 	);
 }
 

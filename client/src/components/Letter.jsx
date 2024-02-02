@@ -1,14 +1,30 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 
 function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column }) {
+	//state
 	const [letterColor, setLetterColor] = useState('#E3E3E3');
 	const [selected, setSelected] = useState(false);
     const [textColor, setTextColor] = useState('#505050')
+	const [position, setPosition] = useState({
+		x: null,
+		y: null,
+		height: null
+	});
+
+	//hooks
+	const screenPosition = useRef(null);
+
+	useEffect(() => {
+		if(!screenPosition) return;
+		const rect = screenPosition.current.getBoundingClientRect();
+		setPosition({x: rect.x, y: rect.y, height: rect.height})
+	},[screenPosition]);
 
 	useEffect(() => {
         deactivateLetter();
     }, [selectedLetter]);
 
+	//variables
 	text = text.toUpperCase();
 
 	const isWithinRange = (value, rangeStart, rangeEnd) => {
@@ -28,7 +44,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	const handleClick = () => {
 		changeColor();
 		setSelected(true);
-		handleSelectLetter(row, column);
+		handleSelectLetter(row, column, position.x, position.y, position.height);
 	};
 
 	const changeColor = () => {
@@ -44,7 +60,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	};
 
 	return (
-		<div className='letter' style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
+		<div className='letter' ref={screenPosition} style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
 			{text}
 		</div>
 	);

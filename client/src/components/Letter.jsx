@@ -5,6 +5,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	const [letterColor, setLetterColor] = useState('#E3E3E3');
 	const [selected, setSelected] = useState(false);
     const [textColor, setTextColor] = useState('#505050')
+	const [canSelect, setCanSelect] = useState(true);
 	const [position, setPosition] = useState({
 		x: null,
 		y: null,
@@ -22,7 +23,12 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 
 	useEffect(() => {
         deactivateLetter();
+		setCanSelect(isSelectable())
     }, [selectedLetter]);
+
+	useEffect(() => {
+		
+	}, [prevSelected])
 
 	//variables
 	text = text.toUpperCase();
@@ -42,10 +48,17 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	};
 
 	const handleClick = () => {
+		if(!canSelect) return;
 		changeColor();
 		setSelected(true);
 		handleSelectLetter(row, column, position.x, position.y, position.height);
 	};
+
+	const isSelectable = () => {
+		if(selectedLetter.row === null) return true;
+		if(row === selectedLetter.row || column === selectedLetter.column) return true;
+		else { return false }
+	}
 
 	const changeColor = () => {
 		let hue = currentHue;

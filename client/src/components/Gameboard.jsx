@@ -20,8 +20,9 @@ function Gameboard({ board }) {
 	//variables
 	const handleSelectLetter = (row, column, x, y, height) => {
 		setSelectedLetter((prevState) => {
-			if (!prevState) return;
+			if (prevState) {
 			setPrevSelected(prevState);
+			}
 			return { row, column, x, y, height };
 		});
 	};

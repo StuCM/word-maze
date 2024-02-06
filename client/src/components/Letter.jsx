@@ -6,6 +6,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	const [selected, setSelected] = useState(false);
     const [textColor, setTextColor] = useState('#505050')
 	const [canSelect, setCanSelect] = useState(true);
+	const [isDisabled, setIsDisabled] = useState(false);
 	const [position, setPosition] = useState({
 		x: null,
 		y: null,
@@ -46,16 +47,18 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 			(column === selectedLetter.column && isWithinRange(row, prevSelected.row, selectedLetter.row))
 		) {
 			setTextColor('#CACACA');
+			setIsDisabled(true);
 		}
 	};
 
 	const handleClick = () => {
-		if(!canSelect) return;
+		if(!canSelect || isDisabled) return;
 		changeColor();
 		setSelected(true);
 		handleSelectLetter(row, column, position.x, position.y, position.height);
 	};
 
+	//allow selection when row or column matches prev selected
 	const isSelectable = () => {
 		if(selectedLetter.row === null) return true;
 		if(row === selectedLetter.row || column === selectedLetter.column) return true;

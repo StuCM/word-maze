@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 
-function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks }) {
+function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, isGameOver }) {
 	//state
 	const [letterColor, setLetterColor] = useState('#E3E3E3');
 	const [selected, setSelected] = useState(false);
@@ -30,8 +30,10 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
     }, [selectedLetter]);
 
 	useEffect(() => {
-		
-	}, [prevSelected])
+		if(letterColor !== "#E3E3E3" && isGameOver){
+			setLetterColor('red')
+		}
+	}, [isGameOver])
 
 	//variables
 	text = text.toUpperCase();

@@ -2,7 +2,7 @@ import Letter from './Letter';
 import Line from './Line';
 import React, { useState, useRef, useEffect } from 'react';
 
-function Gameboard({ board, word }) {
+function Gameboard({ board, word, isGameOver, setIsGameOver }) {
 	//state
 	const [currentHue, setCurrentHue] = useState(null);
 	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null, letter:null });
@@ -31,6 +31,7 @@ function Gameboard({ board, word }) {
 			console.log(selWord)
 			if(selWord === word) console.log("Winner")
 			else { console.log("Incorrect word, try again!")}
+			setIsGameOver(true)
 		}
 	},[userWord])
 
@@ -102,6 +103,7 @@ function Gameboard({ board, word }) {
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
 										clicks={clicks}
+										isGameOver={isGameOver}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);
@@ -118,8 +120,9 @@ function Gameboard({ board, word }) {
 								startY={line.startY}
 								endX={line.endX}
 								endY={line.endY}
-								key={index}
+								key={`${index}-${isGameOver}`}
 								hue={currentHue}
+								isGameOver={isGameOver}
 							/>
 						);
 					})}

@@ -1,12 +1,11 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 
-function Line({ startX, startY, endX, endY, hue }) {
-	const startColor = useMemo(() => `hsl(${hue - 15}, 63%, 62%)`, []);
-	const endColor = useMemo(() => `hsl(${(hue) % 357}, 63%, 62%)`, []);
+function Line({ startX, startY, endX, endY, hue, isGameOver }) {
+	let startColor = useMemo(() => isGameOver ? 'red' : `hsl(${hue - 15}, 63%, 62%)`, []);
+	let endColor = useMemo(() => isGameOver ? 'red' : `hsl(${(hue) % 357}, 63%, 62%)`, []);
 	const id = useMemo(() => uuidv4(), []);
-	console.log(startX)
-
+	
 	return (
 		<>
 			<defs>

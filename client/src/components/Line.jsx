@@ -2,8 +2,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { useMemo } from 'react';
 
 function Line({ startX, startY, endX, endY, hue }) {
-	const startColor = useMemo(() => `hsl(${hue}, 63%, 62%)`, []);
-	const endColor = useMemo(() => `hsl(${(hue + 15) % 357}, 63%, 62%)`, []);
+	const startColor = useMemo(() => `hsl(${hue - 15}, 63%, 62%)`, []);
+	const endColor = useMemo(() => `hsl(${(hue) % 357}, 63%, 62%)`, []);
 	const id = useMemo(() => uuidv4(), []);
 
 	return (

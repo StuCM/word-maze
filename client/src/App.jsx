@@ -30,7 +30,7 @@ function App() {
 				<p className='text-3xl mt-1'>{word}</p>
 			</div>
 			<Gameboard key={key} board={board} />
-			<ScoreUI onReset={() => setKey(prevKey => prevKey + 1)} />
+			<ScoreUI onReset={() => setKey(prevKey => prevKey + 1)} attempts='3' />
 		</main>
 	);
 }

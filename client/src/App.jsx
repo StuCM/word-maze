@@ -5,7 +5,8 @@ import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
 
 function App() {
-  const [key, setKey] = useState(0);
+	const [isGameOver, setIsGameOver] = useState(false);
+	const [key, setKey] = useState(0);
 	const board = [
 		['w', 'o', 'd', 'r', 'o', 'w'],
 		['o', 's', 'd', 'd', 'w', 's'],
@@ -29,8 +30,8 @@ function App() {
 				<p className='text-lg'>Todays Word:</p>
 				<p className='text-3xl mt-1'>{word}</p>
 			</div>
-			<Gameboard key={key} board={board} word={word} />
-			<ScoreUI onReset={() => setKey(prevKey => prevKey + 1)} attempts='3' />
+			<Gameboard key={key} board={board} word={word} isGameOver={isGameOver} setIsGameOver={setIsGameOver} />
+			<ScoreUI onReset={() => setKey((prevKey) => prevKey + 1)} attempts='3' />
 		</main>
 	);
 }

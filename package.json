@@ -11,5 +11,8 @@
   "license": "ISC",
   "devDependencies": {
     "prettier": "3.2.4"
+  },
+  "dependencies": {
+    "uuid": "^9.0.1"
   }
 }

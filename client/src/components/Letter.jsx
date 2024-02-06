@@ -55,7 +55,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 		if(!canSelect || isDisabled || clicks === 0) return;
 		changeColor();
 		setSelected(true);
-		handleSelectLetter(row, column, position.x, position.y, position.height);
+		handleSelectLetter(row, column, position.x, position.y, position.height, text);
 	};
 
 	//allow selection when row or column matches prev selected

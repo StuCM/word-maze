@@ -5,10 +5,11 @@ import React, { useState, useRef, useEffect } from 'react';
 function Gameboard({ board, word }) {
 	//state
 	const [currentHue, setCurrentHue] = useState(null);
-	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null });
+	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null, letter:null });
 	const [prevSelected, setPrevSelected] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [lines, setLines] = useState([]);
 	const [clicks, setClicks] = useState(word.length)
+	const [userWord, setUserWord] = useState([]);
 	const gameboard = useRef();
 
 	//hooks
@@ -17,18 +18,31 @@ function Gameboard({ board, word }) {
 		if (newLine) {
 			setLines([...lines, newLine]);
 		}
+		//create array of selected word
+		if(selectedLetter.letter) {
+			setUserWord([...userWord, selectedLetter.letter])
+		}
+		
 	}, [selectedLetter]);
 
+	useEffect(()=>{
+		if(clicks === 0){
+			const selWord = userWord.join('');
+			console.log(selWord)
+			if(selWord === word) console.log("Winner")
+			else { console.log("Incorrect word, try again!")}
+		}
+	},[userWord])
+
 	//variables
-	const handleSelectLetter = (row, column, x, y, height) => {
+	const handleSelectLetter = (row, column, x, y, height, letter) => {
 		setClicks(clicks - 1)
 		setSelectedLetter((prevState) => {
 			if (prevState) {
 				setPrevSelected(prevState);
 			}
-			return { row, column, x, y, height };
+			return { row, column, x, y, height, letter };
 		});
-
 	};
 
 	const createLine = () => {

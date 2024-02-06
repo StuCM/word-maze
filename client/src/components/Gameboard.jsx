@@ -48,15 +48,16 @@ function Gameboard({ board }) {
 			//check direction of the next letter
 			const distance = selectedLetterYInViewBox - prevSelectedYInViewBox;
 			startX = prevSelectedXInViewBox + heightInViewBox / 2;
-			startY = prevSelectedYInViewBox + (distance > 0 ? heightInViewBox : 0);
+			startY = prevSelectedYInViewBox + (distance > 0 ? heightInViewBox - 1 : 1);
 			endX = startX;
-			endY = selectedLetterYInViewBox + (distance > 0 ? 0 : heightInViewBox);
+			endY = selectedLetterYInViewBox + (distance > 0 ? 1 : heightInViewBox - 1);
 		} else {
 			const distance = selectedLetterXInViewBox - prevSelectedXInViewBox;
 			startY = prevSelectedYInViewBox + heightInViewBox / 2;
-			startX = prevSelectedXInViewBox + (distance > 0 ? heightInViewBox : 0);
+			startX = prevSelectedXInViewBox + (distance > 0 ? heightInViewBox - 1 : 1);
 			endY = startY;
-			endX = selectedLetterXInViewBox + (distance > 0 ? 0 : heightInViewBox);
+			endX = selectedLetterXInViewBox + (distance > 0 ? 1 : heightInViewBox - 1);
+			// 1 -1 to create small overlap avoid gap
 		}
 
 		return { startX, startY, endX, endY };

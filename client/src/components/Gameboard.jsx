@@ -2,12 +2,13 @@ import Letter from './Letter';
 import Line from './Line';
 import React, { useState, useRef, useEffect } from 'react';
 
-function Gameboard({ board }) {
+function Gameboard({ board, word }) {
 	//state
 	const [currentHue, setCurrentHue] = useState(null);
 	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [prevSelected, setPrevSelected] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [lines, setLines] = useState([]);
+	const [clicks, setClicks] = useState(word.length)
 	const gameboard = useRef();
 
 	//hooks
@@ -20,12 +21,14 @@ function Gameboard({ board }) {
 
 	//variables
 	const handleSelectLetter = (row, column, x, y, height) => {
+		setClicks(clicks - 1)
 		setSelectedLetter((prevState) => {
 			if (prevState) {
 				setPrevSelected(prevState);
 			}
 			return { row, column, x, y, height };
 		});
+
 	};
 
 	const createLine = () => {
@@ -84,6 +87,7 @@ function Gameboard({ board }) {
 										prevSelected={prevSelected}
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
+										clicks={clicks}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);

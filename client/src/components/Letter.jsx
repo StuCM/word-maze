@@ -1,6 +1,6 @@
 import { useEffect, useState, useRef } from 'react';
 
-function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column }) {
+function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks }) {
 	//state
 	const [letterColor, setLetterColor] = useState('#E3E3E3');
 	const [selected, setSelected] = useState(false);
@@ -52,7 +52,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	};
 
 	const handleClick = () => {
-		if(!canSelect || isDisabled) return;
+		if(!canSelect || isDisabled || clicks === 0) return;
 		changeColor();
 		setSelected(true);
 		handleSelectLetter(row, column, position.x, position.y, position.height);

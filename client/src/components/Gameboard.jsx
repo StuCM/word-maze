@@ -99,6 +99,7 @@ function Gameboard({ board }) {
 								endX={line.endX}
 								endY={line.endY}
 								key={index}
+								hue={currentHue}
 							/>
 						);
 					})}

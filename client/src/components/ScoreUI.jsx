@@ -7,7 +7,7 @@ function ScoreUI({ score, attempts, onReset }) {
 	score = 325;
 
     const reduceAttempts = () => {
-		onReset()
+		onReset
         return remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0
     }
 

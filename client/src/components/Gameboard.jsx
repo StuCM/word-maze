@@ -8,6 +8,7 @@ function Gameboard({ board }) {
 	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [prevSelected, setPrevSelected] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [lines, setLines] = useState([]);
+	const gameboard = useRef();
 
 	//hooks
 	useEffect(() => {
@@ -21,43 +22,44 @@ function Gameboard({ board }) {
 	const handleSelectLetter = (row, column, x, y, height) => {
 		setSelectedLetter((prevState) => {
 			if (prevState) {
-			setPrevSelected(prevState);
+				setPrevSelected(prevState);
 			}
 			return { row, column, x, y, height };
 		});
 	};
 
-	const calculateLinePoint = (axis, distance, isStart = false) => {
-		if (isStart) {
-			return distance < 0 ? prevSelected[axis] + prevSelected.height : prevSelected[axis];
-		} else {
-			return distance < 0 ? selectedLetter[axis] : selectedLetter[axis] + prevSelected.height;
-		}
-	};
-
 	const createLine = () => {
-		//return on first selection
-		if (!prevSelected.x) return;
+		// Return on first selection
+		if (prevSelected.x === null) return;
 
-		let startX;
-		let startY;
-		let endX;
-		let endY;
+		const gameboardPos = gameboard.current.getBoundingClientRect();
+		const viewBoxSize = 100; // Size of the viewBox
+
+		// Convert prevSelected and selectedLetter to the viewBox coordinate system
+		const prevSelectedXInViewBox = (prevSelected.x / gameboardPos.width) * viewBoxSize;
+		const prevSelectedYInViewBox = (prevSelected.y / gameboardPos.height) * viewBoxSize;
+		const selectedLetterXInViewBox = (selectedLetter.x / gameboardPos.width) * viewBoxSize;
+		const selectedLetterYInViewBox = (selectedLetter.y / gameboardPos.height) * viewBoxSize;
+		const heightInViewBox = (prevSelected.height / gameboardPos.height) * viewBoxSize;
+
+		let startX, startY, endX, endY;
 
 		if (prevSelected.column === selectedLetter.column) {
-			startX = selectedLetter.x + selectedLetter.height / 2;
-			const distance = prevSelected.y - selectedLetter.y;
-
-			startY = calculateLinePoint('y', distance, true);
+			//check direction of the next letter
+			const distance = selectedLetterYInViewBox - prevSelectedYInViewBox;
+			startX = prevSelectedXInViewBox + heightInViewBox / 2;
+			startY = prevSelectedYInViewBox + (distance > 0 ? heightInViewBox - 1 : 1);
 			endX = startX;
-			endY = calculateLinePoint('y', distance);
+			endY = selectedLetterYInViewBox + (distance > 0 ? 1 : heightInViewBox - 1);
 		} else {
-			startY = selectedLetter.y + selectedLetter.height / 2;
-			const distance = prevSelected.x - selectedLetter.x;
-			startX = calculateLinePoint('x', distance, true);
+			const distance = selectedLetterXInViewBox - prevSelectedXInViewBox;
+			startY = prevSelectedYInViewBox + heightInViewBox / 2;
+			startX = prevSelectedXInViewBox + (distance > 0 ? heightInViewBox - 1 : 1);
 			endY = startY;
-			endX = calculateLinePoint('x', distance);
+			endX = selectedLetterXInViewBox + (distance > 0 ? 1 : heightInViewBox - 1);
+			// 1 -1 to create small overlap avoid gap
 		}
+
 		return { startX, startY, endX, endY };
 	};
 
@@ -67,7 +69,7 @@ function Gameboard({ board }) {
 	};
 	return (
 		<>
-			<section className='board-container mt-10' style={gridStyle} aria-label='gameboard'>
+			<section ref={gameboard} className='board-container mt-10' style={gridStyle} aria-label='gameboard'>
 				{board.map((row, rowIndex) => {
 					return (
 						<React.Fragment key={rowIndex}>
@@ -89,7 +91,7 @@ function Gameboard({ board }) {
 						</React.Fragment>
 					);
 				})}
-
+				<svg viewBox="0 0 100 100" className='absolute top-0 left-0 pointer-events-none ma'>
 				{lines.length > 0 &&
 					lines.map((line, index) => {
 						return (
@@ -103,6 +105,7 @@ function Gameboard({ board }) {
 							/>
 						);
 					})}
+					</svg>
 			</section>
 		</>
 	);

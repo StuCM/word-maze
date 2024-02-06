@@ -13,13 +13,15 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	});
 
 	//hooks
-	const screenPosition = useRef(null);
+	const letterRef = useRef(null);
 
 	useEffect(() => {
-		if(!screenPosition) return;
-		const rect = screenPosition.current.getBoundingClientRect();
-		setPosition({x: rect.x, y: rect.y, height: rect.height})
-	},[screenPosition]);
+		if(!letterRef) return;
+		const x = letterRef.current.offsetLeft
+		const y = letterRef.current.offsetTop
+		const height = letterRef.current.offsetHeight
+		setPosition({x, y, height})
+	},[letterRef]);
 
 	useEffect(() => {
         deactivateLetter();
@@ -73,7 +75,7 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	};
 
 	return (
-		<div className='letter' ref={screenPosition} style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
+		<div className='letter' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
 			{text}
 		</div>
 	);

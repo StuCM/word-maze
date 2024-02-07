@@ -3,10 +3,19 @@ import { useState } from 'react';
 import Header from './components/Header';
 import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 
 function App() {
 	const [isGameOver, setIsGameOver] = useState(false);
 	const [key, setKey] = useState(0);
+	const [remainingAttempts, setRemainingAttempts] = useState(3);
+
+	const reduceAttempts = () => { 
+		setKey((prevKey) => prevKey + 1) 
+		return remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
+	}
+
 	const board = [
 		['w', 'o', 'd', 'r', 'o', 'w'],
 		['o', 's', 'd', 'd', 'w', 's'],
@@ -31,7 +40,11 @@ function App() {
 				<p className='text-3xl mt-1'>{word}</p>
 			</div>
 			<Gameboard key={key} board={board} word={word} isGameOver={isGameOver} setIsGameOver={setIsGameOver} />
-			<ScoreUI onReset={() => setKey((prevKey) => prevKey + 1)} attempts='3' />
+			<ScoreUI onReset={ reduceAttempts } attempts={ remainingAttempts } >
+				<button onClick={reduceAttempts}>
+					<FontAwesomeIcon icon={faRotateLeft} className='text-3xl' />
+				</button>
+			</ScoreUI>
 		</main>
 	);
 }

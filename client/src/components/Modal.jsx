@@ -1,5 +1,7 @@
 import { useContext, useEffect, useRef } from "react";
 import { GlobalState } from "../App";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { faX } from "@fortawesome/free-solid-svg-icons";
 
 function Modal({ isModalOpen, children }) {
     const { setIsModalOpen } = useContext(GlobalState);
@@ -13,9 +15,12 @@ function Modal({ isModalOpen, children }) {
     }, [isModalOpen])
 
     return (
-        <dialog ref={dialogRef}>
+        <dialog className="relative w-4/5 rounded-lg" ref={dialogRef}>
             {children}
-            <button onClick={ () => setIsModalOpen(false) }>Close</button>
+            <button className='absolute right-0 top-0 m-2' onClick={ () => setIsModalOpen(false) }>
+                <FontAwesomeIcon icon={faX} className='text-lg' />
+            </button>
+            
         </dialog>
     )
 }

@@ -4,3 +4,10 @@ export const GAME_STATES = {
     GAMEOVER: 'gameover',
     WIN: 'win'
 }
+
+export const LETTER_STATES = {
+    SELECTED: 'selected',
+    CAN_SELECT: 'canSelect',
+    DISABLED: 'disabled',
+    UNSELECTABLE: 'unselectable'
+  };

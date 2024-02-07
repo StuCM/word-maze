@@ -1,8 +1,11 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
 import { GAME_STATES } from '../constants/gameState';
+import { GlobalState} from '../App'
 
-function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
+function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
 	//state
+	const { score, setScore } = useContext(GlobalState);
+
 	const [letterColor, setLetterColor] = useState('#E3E3E3');
 	const [selected, setSelected] = useState(false);
     const [textColor, setTextColor] = useState('#505050')
@@ -54,6 +57,8 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 		) {
 			setTextColor('#CACACA');
 			setIsDisabled(true);
+			console.log("running")
+			setScore(prevScore => prevScore + letterScore)
 		}
 	};
 
@@ -84,8 +89,9 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	};
 
 	return (
-		<div className='letter' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
+		<div className='letter relative' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
 			{text}
+			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
 		</div>
 	);
 }

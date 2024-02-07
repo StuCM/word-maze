@@ -1,7 +1,6 @@
 import { useState } from 'react';
 
 function ScoreUI({ score, attempts, children }) {
-	score = 325;
 
 	return (
 		<section>

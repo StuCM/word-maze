@@ -1,5 +1,5 @@
 import './App.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, createContext } from 'react';
 import Header from './components/Header';
 import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
@@ -7,15 +7,19 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 
+export const GlobalState = createContext();
+
 function App() {
 	const [gameState, setGameState] = useState(GAME_STATES.RUNNING);
 	const [key, setKey] = useState(0);
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
+	const [score, setScore] = useState(0);
 
 	useEffect(() => {
 		if(gameState === GAME_STATES.INCORRECT) {
 			setTimeout(() => { 
 				reduceAttempts();
+				setScore(0)
 			 }, 1000)
 		}
 	}, [gameState])
@@ -30,13 +34,13 @@ function App() {
 	}
 
 	const board = [
-		['w', 'o', 'd', 'r', 'o', 'w'],
-		['o', 's', 'd', 'd', 'w', 's'],
-		['s', 'o', 'w', 'r', 'o', 'r'],
-		['r', 's', 'd', 'o', 'w', 's'],
-		['o', 'w', 's', 's', 'd', 'r'],
-		['w', 'd', 's', 'o', 'r', 'd'],
-	];
+		[{ text: 'w', score: 4 }, { text: 'o', score: 1 }, { text: 'd', score: 2 }, { text: 'r', score: 1 }, { text: 'o', score: 1 }, { text: 'w', score: 4 }],
+		[{ text: 'o', score: 1 }, { text: 's', score: 1 }, { text: 'd', score: 2 }, { text: 'd', score: 2 }, { text: 'w', score: 4 }, { text: 's', score: 1 }],
+		[{ text: 's', score: 1 }, { text: 'o', score: 1 }, { text: 'w', score: 4 }, { text: 'r', score: 1 }, { text: 'o', score: 1 }, { text: 'r', score: 1 }],
+		[{ text: 'r', score: 1 }, { text: 's', score: 1 }, { text: 'd', score: 2 }, { text: 'o', score: 1 }, { text: 'w', score: 4 }, { text: 's', score: 1 }],
+		[{ text: 'o', score: 1 }, { text: 'w', score: 4 }, { text: 's', score: 1 }, { text: 's', score: 1 }, { text: 'd', score: 2 }, { text: 'r', score: 1 }],
+		[{ text: 'w', score: 4 }, { text: 'd', score: 2 }, { text: 's', score: 1 }, { text: 'o', score: 1 }, { text: 'r', score: 1 }, { text: 'd', score: 2 }],
+	  ];
 	const board2 = [
 		['w', 'o', 'd', 'r', 'o'],
 		['o', 's', 'd', 'd', 'w'],
@@ -46,6 +50,7 @@ function App() {
 	];
 	const word = 'WORDS';
 	return (
+		<GlobalState.Provider value={{ score, setScore}}>
 		<main className='flex flex-col h-full'>
 			<Header />
 			<div className='mt-10'>
@@ -53,12 +58,13 @@ function App() {
 				<p className='text-3xl mt-1'>{word}</p>
 			</div>
 			<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
-			<ScoreUI onReset={ reduceAttempts } attempts={ remainingAttempts } >
+			<ScoreUI onReset={ reduceAttempts } attempts={ remainingAttempts } score={score} >
 				<button onClick={reduceAttempts}>
 					<FontAwesomeIcon icon={faRotateLeft} className='text-3xl' />
 				</button>
 			</ScoreUI>
 		</main>
+		</GlobalState.Provider>
 	);
 }
 

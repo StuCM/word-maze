@@ -101,7 +101,8 @@ function Gameboard({ board, word, gameState, setGameState }) {
 							{row.map((letter, columnIndex) => {
 								return (
 									<Letter
-										text={letter}
+										text={letter.text}
+										letterScore={letter.score}
 										row={rowIndex}
 										column={columnIndex}
 										handleSelectLetter={handleSelectLetter}

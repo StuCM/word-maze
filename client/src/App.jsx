@@ -104,14 +104,14 @@ function App() {
 		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
 			<main className='flex flex-col h-full'>
 				<Header />
-				<div className='mt-10'>
+				<div className='mt-5'>
 					<p className='text-lg'>Todays Word:</p>
-					<p className='text-3xl mt-1'>{word}</p>
+					<p className='text-3xl mt-1 font-bold tracking-wider'>{word}</p>
 				</div>
 				<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
 				<ScoreUI onReset={reduceAttempts} attempts={remainingAttempts} score={score}>
-					<button onClick={reduceAttempts}>
-						<FontAwesomeIcon icon={faRotateLeft} className='text-3xl' />
+					<button className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg' onClick={reduceAttempts}>
+						<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>

@@ -94,7 +94,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 	};
 	return (
 		<>
-			<section ref={gameboard} className='board-container mt-10' style={gridStyle} aria-label='gameboard'>
+			<section ref={gameboard} className='board-container mt-8' style={gridStyle} aria-label='gameboard'>
 				{board.map((row, rowIndex) => {
 					return (
 						<React.Fragment key={rowIndex}>

@@ -3,8 +3,32 @@ import { useEffect, useMemo } from 'react';
 import { GAME_STATES } from '../constants/gameState';
 
 function Line({ startX, startY, endX, endY, hue, gameState }) {
-	let startColor = useMemo(() => gameState !== GAME_STATES.RUNNING ? 'red' : `hsl(${hue - 15}, 63%, 62%)`, []);
-	let endColor = useMemo(() => gameState !== GAME_STATES.RUNNING ? 'red' : `hsl(${(hue) % 357}, 63%, 62%)`, []);
+	let startColor = useMemo(() => {
+		switch(gameState) {
+			case GAME_STATES.GAMEOVER:
+				return 'red';
+			case GAME_STATES.INCORRECT:
+				return 'red';
+			case GAME_STATES.WIN:
+				return 'green';
+			case GAME_STATES.RUNNING:
+				return `hsl(${(hue) % 357}, 63%, 62%)`;
+		}
+	}, [gameState]);
+
+	let endColor = useMemo(() => {
+		switch(gameState) {
+			case GAME_STATES.GAMEOVER:
+				return 'red';
+			case GAME_STATES.INCORRECT:
+				return 'red';
+			case GAME_STATES.WIN:
+				return 'green';
+			case GAME_STATES.RUNNING:
+				return `hsl(${(hue) % 357}, 63%, 62%)`;
+		}
+	}, [gameState]);
+
 	const id = useMemo(() => uuidv4(), []);
 	
 	return (

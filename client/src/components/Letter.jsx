@@ -31,9 +31,12 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
     }, [selectedLetter]);
 
 	useEffect(() => {
-		if(letterColor !== "#E3E3E3" && gameState !== GAME_STATES.RUNNING){
-			setLetterColor('red')
+		if(letterColor !== "#E3E3E3" && gameState === GAME_STATES.WIN){
+			setLetterColor('green')
 		}
+		else if(letterColor !== "#E3E3E3" && gameState !== GAME_STATES.RUNNING){
+			setLetterColor('red')
+		} 
 	}, [gameState])
 
 	//variables

@@ -1,12 +1,14 @@
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useContext } from 'react';
+import { GAME_STATES, LETTER_STATES } from '../constants/gameState';
+import { GlobalState} from '../App'
 
-function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column }) {
+function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
 	//state
+	const { score, setScore } = useContext(GlobalState);
+
 	const [letterColor, setLetterColor] = useState('#E3E3E3');
-	const [selected, setSelected] = useState(false);
-    const [textColor, setTextColor] = useState('#505050')
-	const [canSelect, setCanSelect] = useState(true);
-	const [isDisabled, setIsDisabled] = useState(false);
+	const [textColor, setTextColor] = useState('#505050')
+	const [select, setSelect] = useState(LETTER_STATES.CAN_SELECT)
 	const [position, setPosition] = useState({
 		x: null,
 		y: null,
@@ -26,12 +28,17 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 
 	useEffect(() => {
         deactivateLetter();
-		setCanSelect(isSelectable())
+		setSelect(isSelectable())
     }, [selectedLetter]);
 
 	useEffect(() => {
-		
-	}, [prevSelected])
+		if(letterColor !== "#E3E3E3" && gameState === GAME_STATES.WIN){
+			setLetterColor('green')
+		}
+		else if(letterColor !== "#E3E3E3" && gameState !== GAME_STATES.RUNNING){
+			setLetterColor('red')
+		} 
+	}, [gameState])
 
 	//variables
 	text = text.toUpperCase();
@@ -47,22 +54,23 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 			(column === selectedLetter.column && isWithinRange(row, prevSelected.row, selectedLetter.row))
 		) {
 			setTextColor('#CACACA');
-			setIsDisabled(true);
+			setSelect(LETTER_STATES.DISABLED);
+			setScore(prevScore => prevScore + letterScore)
 		}
 	};
 
 	const handleClick = () => {
-		if(!canSelect || isDisabled) return;
+		if(select !== LETTER_STATES.CAN_SELECT || clicks === 0) return;
 		changeColor();
-		setSelected(true);
-		handleSelectLetter(row, column, position.x, position.y, position.height);
+		setSelect(LETTER_STATES.CAN_SELECT);
+		handleSelectLetter(row, column, position.x, position.y, position.height, text);
 	};
 
 	//allow selection when row or column matches prev selected
 	const isSelectable = () => {
-		if(selectedLetter.row === null) return true;
-		if(row === selectedLetter.row || column === selectedLetter.column) return true;
-		else { return false }
+		if(selectedLetter.row === null) return LETTER_STATES.CAN_SELECT;
+		if(row === selectedLetter.row || column === selectedLetter.column) return LETTER_STATES.CAN_SELECT;
+		else { return LETTER_STATES.UNSELECTABLE }
 	}
 
 	const changeColor = () => {
@@ -78,8 +86,9 @@ function Letter({ text, currentHue, setCurrentHue, selectedLetter, handleSelectL
 	};
 
 	return (
-		<div className='letter' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={!selected ? handleClick : null}>
+		<div className='letter relative' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={select === LETTER_STATES.CAN_SELECT ? handleClick : null}>
 			{text}
+			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
 		</div>
 	);
 }

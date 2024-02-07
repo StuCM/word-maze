@@ -1,12 +1,36 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
+import { GAME_STATES } from '../constants/gameState';
 
-function Line({ startX, startY, endX, endY, hue }) {
-	const startColor = useMemo(() => `hsl(${hue - 15}, 63%, 62%)`, []);
-	const endColor = useMemo(() => `hsl(${(hue) % 357}, 63%, 62%)`, []);
+function Line({ startX, startY, endX, endY, hue, gameState }) {
+	let startColor = useMemo(() => {
+		switch(gameState) {
+			case GAME_STATES.GAMEOVER:
+				return 'red';
+			case GAME_STATES.INCORRECT:
+				return 'red';
+			case GAME_STATES.WIN:
+				return 'green';
+			case GAME_STATES.RUNNING:
+				return `hsl(${(hue) % 357}, 63%, 62%)`;
+		}
+	}, [gameState]);
+
+	let endColor = useMemo(() => {
+		switch(gameState) {
+			case GAME_STATES.GAMEOVER:
+				return 'red';
+			case GAME_STATES.INCORRECT:
+				return 'red';
+			case GAME_STATES.WIN:
+				return 'green';
+			case GAME_STATES.RUNNING:
+				return `hsl(${(hue) % 357}, 63%, 62%)`;
+		}
+	}, [gameState]);
+
 	const id = useMemo(() => uuidv4(), []);
-	console.log(startX)
-
+	
 	return (
 		<>
 			<defs>

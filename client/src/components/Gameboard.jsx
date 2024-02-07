@@ -1,13 +1,16 @@
+import { GAME_STATES } from '../constants/gameState';
 import Letter from './Letter';
 import Line from './Line';
 import React, { useState, useRef, useEffect } from 'react';
 
-function Gameboard({ board }) {
+function Gameboard({ board, word, gameState, setGameState }) {
 	//state
 	const [currentHue, setCurrentHue] = useState(null);
-	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null });
+	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null, letter:null });
 	const [prevSelected, setPrevSelected] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [lines, setLines] = useState([]);
+	const [clicks, setClicks] = useState(word.length)
+	const [userWord, setUserWord] = useState([]);
 	const gameboard = useRef();
 
 	//hooks
@@ -16,15 +19,37 @@ function Gameboard({ board }) {
 		if (newLine) {
 			setLines([...lines, newLine]);
 		}
+		//create array of selected word
+		if(selectedLetter.letter) {
+			setUserWord([...userWord, selectedLetter.letter])
+		}
+		
 	}, [selectedLetter]);
 
+	//check for correct word
+	useEffect(()=>{
+		if(clicks === 0){
+			const selWord = userWord.join('');
+			console.log(selWord)
+			if(selWord === word) {
+				console.log("Winner")
+				setGameState(GAME_STATES.WIN)
+				return;
+			}
+			else { console.log("Incorrect word, try again!")}
+			if(gameState === GAME_STATES.GAMEOVER) return;
+			setGameState(GAME_STATES.INCORRECT)
+		}
+	},[userWord])
+
 	//variables
-	const handleSelectLetter = (row, column, x, y, height) => {
+	const handleSelectLetter = (row, column, x, y, height, letter) => {
+		setClicks(clicks - 1)
 		setSelectedLetter((prevState) => {
 			if (prevState) {
 				setPrevSelected(prevState);
 			}
-			return { row, column, x, y, height };
+			return { row, column, x, y, height, letter };
 		});
 	};
 
@@ -76,7 +101,8 @@ function Gameboard({ board }) {
 							{row.map((letter, columnIndex) => {
 								return (
 									<Letter
-										text={letter}
+										text={letter.text}
+										letterScore={letter.score}
 										row={rowIndex}
 										column={columnIndex}
 										handleSelectLetter={handleSelectLetter}
@@ -84,6 +110,8 @@ function Gameboard({ board }) {
 										prevSelected={prevSelected}
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
+										clicks={clicks}
+										gameState={gameState}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);
@@ -100,8 +128,9 @@ function Gameboard({ board }) {
 								startY={line.startY}
 								endX={line.endX}
 								endY={line.endY}
-								key={index}
+								key={`${index}-${gameState}`}
 								hue={currentHue}
+								gameState={gameState}
 							/>
 						);
 					})}

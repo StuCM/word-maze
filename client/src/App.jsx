@@ -1,8 +1,9 @@
 import './App.css';
-import { useEffect, useState, createContext } from 'react';
+import { useEffect, useState, createContext, useRef, forwardRef } from 'react';
 import Header from './components/Header';
 import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
+import Modal from './components/Modal';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
@@ -14,6 +15,8 @@ function App() {
 	const [key, setKey] = useState(0);
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
 	const [score, setScore] = useState(0);
+
+	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	useEffect(() => {
 		if(gameState === GAME_STATES.INCORRECT) {
@@ -50,7 +53,7 @@ function App() {
 	];
 	const word = 'WORDS';
 	return (
-		<GlobalState.Provider value={{ score, setScore}}>
+		<GlobalState.Provider value={{ score, setScore, setIsModalOpen}}>
 		<main className='flex flex-col h-full'>
 			<Header />
 			<div className='mt-10'>
@@ -63,6 +66,10 @@ function App() {
 					<FontAwesomeIcon icon={faRotateLeft} className='text-3xl' />
 				</button>
 			</ScoreUI>
+			<Modal isModalOpen={isModalOpen}>
+				<p>Testing</p>
+			</Modal>
+			<button onClick={ () => setIsModalOpen(true) }>show modal</button>
 		</main>
 		</GlobalState.Provider>
 	);

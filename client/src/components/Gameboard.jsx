@@ -1,8 +1,9 @@
+import { GAME_STATES } from '../constants/gameState';
 import Letter from './Letter';
 import Line from './Line';
 import React, { useState, useRef, useEffect } from 'react';
 
-function Gameboard({ board, word, isGameOver, setIsGameOver }) {
+function Gameboard({ board, word, gameState, setGameState }) {
 	//state
 	const [currentHue, setCurrentHue] = useState(null);
 	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null, letter:null });
@@ -25,13 +26,15 @@ function Gameboard({ board, word, isGameOver, setIsGameOver }) {
 		
 	}, [selectedLetter]);
 
+	//check for correct word
 	useEffect(()=>{
 		if(clicks === 0){
 			const selWord = userWord.join('');
 			console.log(selWord)
 			if(selWord === word) console.log("Winner")
 			else { console.log("Incorrect word, try again!")}
-			setIsGameOver(true)
+			if(gameState === GAME_STATES.GAMEOVER) return;
+			setGameState(GAME_STATES.INCORRECT)
 		}
 	},[userWord])
 
@@ -103,7 +106,7 @@ function Gameboard({ board, word, isGameOver, setIsGameOver }) {
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
 										clicks={clicks}
-										isGameOver={isGameOver}
+										gameState={gameState}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);
@@ -120,9 +123,9 @@ function Gameboard({ board, word, isGameOver, setIsGameOver }) {
 								startY={line.startY}
 								endX={line.endX}
 								endY={line.endY}
-								key={`${index}-${isGameOver}`}
+								key={`${index}-${gameState}`}
 								hue={currentHue}
-								isGameOver={isGameOver}
+								gameState={gameState}
 							/>
 						);
 					})}

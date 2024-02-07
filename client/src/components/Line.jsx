@@ -1,9 +1,10 @@
 import { v4 as uuidv4 } from 'uuid';
 import { useEffect, useMemo } from 'react';
+import { GAME_STATES } from '../constants/gameState';
 
-function Line({ startX, startY, endX, endY, hue, isGameOver }) {
-	let startColor = useMemo(() => isGameOver ? 'red' : `hsl(${hue - 15}, 63%, 62%)`, []);
-	let endColor = useMemo(() => isGameOver ? 'red' : `hsl(${(hue) % 357}, 63%, 62%)`, []);
+function Line({ startX, startY, endX, endY, hue, gameState }) {
+	let startColor = useMemo(() => gameState !== GAME_STATES.RUNNING ? 'red' : `hsl(${hue - 15}, 63%, 62%)`, []);
+	let endColor = useMemo(() => gameState !== GAME_STATES.RUNNING ? 'red' : `hsl(${(hue) % 357}, 63%, 62%)`, []);
 	const id = useMemo(() => uuidv4(), []);
 	
 	return (

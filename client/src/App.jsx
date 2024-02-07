@@ -1,19 +1,32 @@
 import './App.css';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import Header from './components/Header';
 import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { GAME_STATES } from './constants/gameState';
 
 function App() {
-	const [isGameOver, setIsGameOver] = useState(false);
+	const [gameState, setGameState] = useState(GAME_STATES.RUNNING);
 	const [key, setKey] = useState(0);
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
 
+	useEffect(() => {
+		if(gameState === GAME_STATES.INCORRECT) {
+			setTimeout(() => { 
+				reduceAttempts();
+			 }, 1000)
+		}
+	}, [gameState])
+
 	const reduceAttempts = () => { 
-		setKey((prevKey) => prevKey + 1) 
-		return remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
+		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
+		if(remainingAttempts > 1) {
+			setKey((prevKey) => prevKey + 1)
+			setGameState(GAME_STATES.RUNNING);
+		}
+		else { setGameState(GAME_STATES.GAMEOVER) }
 	}
 
 	const board = [
@@ -39,7 +52,7 @@ function App() {
 				<p className='text-lg'>Todays Word:</p>
 				<p className='text-3xl mt-1'>{word}</p>
 			</div>
-			<Gameboard key={key} board={board} word={word} isGameOver={isGameOver} setIsGameOver={setIsGameOver} />
+			<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
 			<ScoreUI onReset={ reduceAttempts } attempts={ remainingAttempts } >
 				<button onClick={reduceAttempts}>
 					<FontAwesomeIcon icon={faRotateLeft} className='text-3xl' />

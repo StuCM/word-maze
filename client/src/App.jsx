@@ -109,8 +109,8 @@ function App() {
 					<p className='text-3xl mt-1 font-bold tracking-wider'>{word}</p>
 				</div>
 				<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
-				<ScoreUI onReset={reduceAttempts} attempts={remainingAttempts} score={score}>
-					<button className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg' onClick={reduceAttempts}>
+				<ScoreUI attempts={remainingAttempts} score={score}>
+					<button className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg' onClick={reduceAttempts} data-testid='resetButton'>
 						<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
 					</button>
 				</ScoreUI>

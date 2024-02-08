@@ -2,7 +2,6 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen } from '@testing-library/react'
 import userEvent from "@testing-library/user-event"
 import App from '../src/App'
-import MockProvider, { mockSetRemainingAttempts } from "./mocks/MockProvider";
 
 vi.mock('../src/components/Modal', () => ({
     default: () => <div>Test</div>
@@ -31,10 +30,7 @@ describe("App test", () => {
     it("reduces attempts when reset is clicked", async () => {
         const user = userEvent.setup();
 
-        render(
-        <MockProvider>
-            <App />
-        </MockProvider>)
+        render(<App />)
         const button = screen.getByTestId('resetButton')
 
         await user.click(button)

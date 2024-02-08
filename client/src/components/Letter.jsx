@@ -35,7 +35,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 
 	useEffect(() => {
         deactivateLetter();	
-		isSelectable()	
+		isSelectable();	
     }, [selectedLetter]);
 
 	useEffect(() => {
@@ -75,15 +75,25 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	//allow selection when row or column matches prev selected
 	const isSelectable = () => {
 		if (isDisabled) return;
-		if(selectedLetter.row === null) {
+		if(prevSelected.row === null) {
 			setCanSelect(true) 
 			return;
 		}
-		if(row === selectedLetter.row || column === selectedLetter.column) {
-			setCanSelect(true);
-			return
+		if(prevSelected.row === selectedLetter.row) {
+			if(column === selectedLetter.column) {
+				setCanSelect(true);
+			} else {
+				setCanSelect(false);
+			}
 		}
-		return setCanSelect(false);
+		// If the last move was across a column, then only the row is selectable
+		else if(prevSelected.column === selectedLetter.column) {
+			if(row === selectedLetter.row) {
+				setCanSelect(true);
+			} else {
+				setCanSelect(false);
+			}
+		}
 	}
 
 	const changeColor = () => {

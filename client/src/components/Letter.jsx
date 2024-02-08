@@ -4,10 +4,15 @@ import { GlobalState} from '../App'
 
 function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
 	//state
-	const { score, setScore } = useContext(GlobalState);
+	const { setScore } = useContext(GlobalState);
 
-	const [letterColor, setLetterColor] = useState('#E3E3E3');
-	const [textColor, setTextColor] = useState('#505050')
+	const primaryColor = '#FFFFF2'
+	const secondaryText = '#005E79'
+	const incorrectColor = '#F07167'
+	const correctColor = '#67ef6b'
+
+	const [letterColor, setLetterColor] = useState(primaryColor);
+	const [textColor, setTextColor] = useState(secondaryText)
 	const [select, setSelect] = useState(LETTER_STATES.CAN_SELECT)
 	const [position, setPosition] = useState({
 		x: null,
@@ -32,11 +37,11 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
     }, [selectedLetter]);
 
 	useEffect(() => {
-		if(letterColor !== "#E3E3E3" && gameState === GAME_STATES.WIN){
-			setLetterColor('green')
+		if(letterColor !== primaryColor && gameState === GAME_STATES.WIN){
+			setLetterColor(correctColor)
 		}
-		else if(letterColor !== "#E3E3E3" && gameState !== GAME_STATES.RUNNING){
-			setLetterColor('red')
+		else if(letterColor !== primaryColor && gameState !== GAME_STATES.RUNNING){
+			setLetterColor(incorrectColor)
 		} 
 	}, [gameState])
 
@@ -82,7 +87,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 			if (hue === 0) hue = 1;
 		}
 		setCurrentHue(hue);
-		setLetterColor(`hsl(${hue}, 63%, 62%)`);
+		setLetterColor(`hsl(${hue}, 82%, 67%)`);
 	};
 
 	return (

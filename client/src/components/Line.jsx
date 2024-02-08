@@ -3,29 +3,32 @@ import { useEffect, useMemo } from 'react';
 import { GAME_STATES } from '../constants/gameState';
 
 function Line({ startX, startY, endX, endY, hue, gameState }) {
+	const incorrectColor = '#F07167'
+	const correctColor = '#67ef6b'
+
 	let startColor = useMemo(() => {
 		switch(gameState) {
 			case GAME_STATES.GAMEOVER:
-				return 'red';
+				return incorrectColor;
 			case GAME_STATES.INCORRECT:
-				return 'red';
+				return incorrectColor;
 			case GAME_STATES.WIN:
-				return 'green';
+				return correctColor;
 			case GAME_STATES.RUNNING:
-				return `hsl(${(hue) % 357}, 63%, 62%)`;
+				return `hsl(${(hue - 15) % 357}, 82%, 67%)`;
 		}
 	}, [gameState]);
 
 	let endColor = useMemo(() => {
 		switch(gameState) {
 			case GAME_STATES.GAMEOVER:
-				return 'red';
+				return incorrectColor;
 			case GAME_STATES.INCORRECT:
-				return 'red';
+				return incorrectColor;
 			case GAME_STATES.WIN:
-				return 'green';
+				return correctColor;
 			case GAME_STATES.RUNNING:
-				return `hsl(${(hue) % 357}, 63%, 62%)`;
+				return `hsl(${(hue) % 357}, 82%, 67%)`;
 		}
 	}, [gameState]);
 

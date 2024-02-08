@@ -9,7 +9,7 @@
   color: white;
 
   color-scheme: light dark;
-  color: rgba(255, 255, 255, 0.87);
+  @apply text-textPrim;
   background-color: #242424;
 
   font-synthesis: none;
@@ -33,7 +33,7 @@ body {
   place-items: start;
   min-width: 320px;
   min-height: 100vh;
-  background: #66A1D8;
+  @apply bg-primary;
 }
 
 h1 {

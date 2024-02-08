@@ -1,9 +1,11 @@
-import { describe, it, expect } from "vitest";
+import { describe, it, expect, vi } from "vitest";
 import { render, screen } from '@testing-library/react'
 import userEvent from "@testing-library/user-event"
 import App from '../src/App'
-import ScoreUI from '../src/components/ScoreUI'
-import { mock } from "node:test";
+
+vi.mock('../src/components/Modal', () => ({
+    default: () => <div>Test</div>
+}))
 
 describe("App test", () => {
     it("renders title", () => {
@@ -25,19 +27,15 @@ describe("App test", () => {
         const attempt = screen.getByText(/Attempt/i);
         expect(attempt).toBeInTheDocument();
     })
-})
-
-describe("ScoreUI", () => {
     it("reduces attempts when reset is clicked", async () => {
         const user = userEvent.setup();
 
-        const onReset = vi.fn()
-        render(<ScoreUI onReset={onReset} score={0} attempts={3} />)
-        const button = screen.getByRole('button')
+        render(<App />)
+        const button = screen.getByTestId('resetButton')
 
         await user.click(button)
 
-        const attemptsAfter = await screen.findByText(/^2$/)
-        expect(attemptsAfter).toBeInTheDocument()
+        const remainingAttempts = screen.getByTestId('attempts');
+        expect(remainingAttempts.textContent).toBe('2');
     })
 })

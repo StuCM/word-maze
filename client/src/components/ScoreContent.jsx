@@ -1,8 +1,9 @@
-function ScoreContent({ score, dailyScore }) {
+function ScoreContent({ score, dailyScore, word, description }) {
 	const emptyRows = 3 - dailyScore.length;
+    word = word.charAt(0) + word.slice(1).toLowerCase();
 
 	return (
-		<section>
+		<section className='bg-textPrim border-4 rounded-2xl border-primary'>
 			<div id='scores' className='flex justify-center items-center p-3 bg-primary'>
 				<div id='topScore' className='flex flex-1 flex-col mr-5 mt-2 items-center justify-center h-full'>
 					<div className='bg-letterBg rounded-xl py-1 px-5 innerShadow'>
@@ -13,8 +14,8 @@ function ScoreContent({ score, dailyScore }) {
 				<table id='attempts' className='flex-3 mr-1 rounded-lg overflow-hidden'>
 					<tbody>
 						<tr className='bg-letterBg text-textSec innerShadow'>
-							<th className='py-1.5 px-3 text-xs text-center'>Attempt</th>
-							<th className='py-1.5 px-3 text-xs'>Score</th>
+							<th className='py-1.5 px-2 text-sm text-center'>Attempt</th>
+							<th className='py-1.5 px-2.5 text-sm'>Score</th>
 						</tr>
 						{dailyScore.map((item, index) => (
 							<tr
@@ -38,6 +39,11 @@ function ScoreContent({ score, dailyScore }) {
 							))}
 					</tbody>
 				</table>
+			</div>
+			<div className='p-3 font-bold text-lg mb-2 text-textSec'>
+				<p className='mb-3'>Todays word is: </p>
+				<p className='text-2xl mb-2'>{word}</p>
+				<p className='font-semibold text-sm italic'>{description}</p>
 			</div>
 		</section>
 	);

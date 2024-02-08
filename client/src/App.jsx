@@ -20,6 +20,8 @@ function App() {
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
+	const description = 'this is a description placeholder'
+
 	useEffect(() => {
 		if (gameState === GAME_STATES.INCORRECT) {
 			setTimeout(() => {
@@ -116,7 +118,7 @@ function App() {
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					<ScoreContent score={score} dailyScore={dailyScore} />
+					<ScoreContent score={score} dailyScore={dailyScore} word={word} description={description} />
 				</Modal>
 				<button onClick={() => setIsModalOpen(true)}>show modal</button>
 			</main>

@@ -20,7 +20,6 @@ function Modal({ isModalOpen, children }) {
             <button className='absolute right-0 top-0 m-2' onClick={ () => setIsModalOpen(false) }>
                 <FontAwesomeIcon icon={faX} className='text-lg' />
             </button>
-            
         </dialog>
     )
 }

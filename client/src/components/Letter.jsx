@@ -8,6 +8,8 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 
 	const primaryColor = '#FFFFF2'
 	const secondaryText = '#005E79'
+	const incorrectColor = '#F07167'
+	const correctColor = '#67ef6b'
 
 	const [letterColor, setLetterColor] = useState(primaryColor);
 	const [textColor, setTextColor] = useState(secondaryText)
@@ -36,10 +38,10 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 
 	useEffect(() => {
 		if(letterColor !== primaryColor && gameState === GAME_STATES.WIN){
-			setLetterColor('green')
+			setLetterColor(correctColor)
 		}
 		else if(letterColor !== primaryColor && gameState !== GAME_STATES.RUNNING){
-			setLetterColor('red')
+			setLetterColor(incorrectColor)
 		} 
 	}, [gameState])
 

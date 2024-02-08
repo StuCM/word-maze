@@ -4,6 +4,7 @@ import Header from './components/Header';
 import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
 import Modal from './components/Modal';
+import ScoreContent from './components/ScoreContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
@@ -115,34 +116,7 @@ function App() {
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					<div className='mt-4 mb-2'>
-						<h2 className='mb-2 text-2xl'>Top Score</h2>
-						<span className='text-2xl'>{Math.max(...dailyScore.map((item) => item.score))}</span>
-					</div>
-					{gameState === GAME_STATES.WIN ? (
-						<div className='mb-2'>
-							<p>You did it! See your scores:</p>
-							<ul className='mb-3'>
-								{dailyScore.map((score) => {
-									return (
-										<li className='mb-1'>
-											Attempt: {score.attempt} Score: {score.score}
-										</li>
-									);
-								})}
-							</ul>
-							{dailyScore.length < 3 && (
-								<div>
-									<p>Try again for a higher score?</p>
-									<button onClick={reduceAttempts}>
-										<FontAwesomeIcon icon={faRotateLeft} className='text-lg' />
-									</button>
-								</div>
-							)}
-						</div>
-					) : (
-						<p className='p-4 mb-4'>Unlucky, try again tomorrow</p>
-					)}
+					<ScoreContent score={score} dailyScore={dailyScore} />
 				</Modal>
 				<button onClick={() => setIsModalOpen(true)}>show modal</button>
 			</main>

@@ -15,7 +15,7 @@ function Modal({ isModalOpen, children }) {
     }, [isModalOpen])
 
     return (
-        <dialog data-testid="dialog" className="relative w-4/5 rounded-lg" ref={dialogRef}>
+        <dialog data-testid="dialog" className="relative w-11/12 rounded-lg" ref={dialogRef}>
             {children}
             <button className='absolute right-0 top-0 m-2' onClick={ () => setIsModalOpen(false) }>
                 <FontAwesomeIcon icon={faX} className='text-lg' />

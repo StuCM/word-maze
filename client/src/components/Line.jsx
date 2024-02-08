@@ -15,7 +15,7 @@ function Line({ startX, startY, endX, endY, hue, gameState }) {
 			case GAME_STATES.WIN:
 				return correctColor;
 			case GAME_STATES.RUNNING:
-				return `hsl(${(hue) % 357}, 63%, 62%)`;
+				return `hsl(${(hue - 15) % 357}, 82%, 67%)`;
 		}
 	}, [gameState]);
 
@@ -28,7 +28,7 @@ function Line({ startX, startY, endX, endY, hue, gameState }) {
 			case GAME_STATES.WIN:
 				return correctColor;
 			case GAME_STATES.RUNNING:
-				return `hsl(${(hue) % 357}, 63%, 62%)`;
+				return `hsl(${(hue) % 357}, 82%, 67%)`;
 		}
 	}, [gameState]);
 

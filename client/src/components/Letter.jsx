@@ -87,7 +87,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 			if (hue === 0) hue = 1;
 		}
 		setCurrentHue(hue);
-		setLetterColor(`hsl(${hue}, 63%, 62%)`);
+		setLetterColor(`hsl(${hue}, 82%, 67%)`);
 	};
 
 	return (

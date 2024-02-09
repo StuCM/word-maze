@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useContext } from 'react';
-import { GAME_STATES, LETTER_STATES } from '../constants/gameState';
+import { GAME_STATES } from '../constants/gameState';
 import { GlobalState} from '../App'
 
 function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
@@ -13,7 +13,8 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 
 	const [letterColor, setLetterColor] = useState(primaryColor);
 	const [textColor, setTextColor] = useState(secondaryText)
-	const [select, setSelect] = useState(LETTER_STATES.CAN_SELECT)
+	const [canSelect, setCanSelect] = useState(true)
+	const [isDisabled, setIsDisabled] = useState(false)
 	const [position, setPosition] = useState({
 		x: null,
 		y: null,
@@ -23,6 +24,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	//hooks
 	const letterRef = useRef(null);
 
+	//gets position for the lines
 	useEffect(() => {
 		if(!letterRef) return;
 		const x = letterRef.current.offsetLeft
@@ -32,17 +34,21 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	},[letterRef]);
 
 	useEffect(() => {
-        deactivateLetter();
-		setSelect(isSelectable())
+        deactivateLetter();	
+		isSelectable();	
     }, [selectedLetter]);
 
 	useEffect(() => {
+		console.log(gameState)
 		if(letterColor !== primaryColor && gameState === GAME_STATES.WIN){
 			setLetterColor(correctColor)
 		}
-		else if(letterColor !== primaryColor && gameState !== GAME_STATES.RUNNING){
+		else if(letterColor !== primaryColor && gameState === GAME_STATES.INCORRECT){
 			setLetterColor(incorrectColor)
 		} 
+		else if(gameState === GAME_STATES.GAMEOVER){
+			setIsDisabled(true);
+		}
 	}, [gameState])
 
 	//variables
@@ -59,29 +65,54 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 			(column === selectedLetter.column && isWithinRange(row, prevSelected.row, selectedLetter.row))
 		) {
 			setTextColor('#CACACA');
-			setSelect(LETTER_STATES.DISABLED);
+			setIsDisabled(true);
 			setScore(prevScore => prevScore + letterScore)
 		}
 	};
 
 	const handleClick = () => {
-		if(select !== LETTER_STATES.CAN_SELECT || clicks === 0) return;
+		if(!canSelect || isDisabled || clicks === 0) return;
 		changeColor();
-		setSelect(LETTER_STATES.CAN_SELECT);
 		handleSelectLetter(row, column, position.x, position.y, position.height, text);
+		setIsDisabled(true);
 	};
 
 	//allow selection when row or column matches prev selected
 	const isSelectable = () => {
-		if(selectedLetter.row === null) return LETTER_STATES.CAN_SELECT;
-		if(row === selectedLetter.row || column === selectedLetter.column) return LETTER_STATES.CAN_SELECT;
-		else { return LETTER_STATES.UNSELECTABLE }
+		if (isDisabled) return;
+		//Allow all first pick
+		if(selectedLetter.row === null) {
+			setCanSelect(true) 
+			return;
+		}
+		//After first pick allow row and column
+		else if(!prevSelected.row){
+			if(column !== selectedLetter.column && row !== selectedLetter.row){
+				setCanSelect(false)
+			}
+		}
+		//If last move was row, only allow column
+		if(prevSelected.row === selectedLetter.row) {
+			if(column === selectedLetter.column) {
+				setCanSelect(true);
+			} else {
+				setCanSelect(false);
+			}
+		}
+		// If the last move was across a column, then only the row is selectable
+		else if(prevSelected.column === selectedLetter.column) {
+			if(row === selectedLetter.row) {
+				setCanSelect(true);
+			} else {
+				setCanSelect(false);
+			}
+		}
 	}
 
 	const changeColor = () => {
 		let hue = currentHue;
 		if (!currentHue) {
-			hue = Math.floor(Math.random() * 357);
+			hue = 45;
 		} else {
 			hue = (currentHue + 15) % 357;
 			if (hue === 0) hue = 1;
@@ -91,7 +122,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	};
 
 	return (
-		<div className='letter relative' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={select === LETTER_STATES.CAN_SELECT ? handleClick : null}>
+		<div className={`letter relative ${isDisabled || !canSelect || gameState === GAME_STATES.GAMEOVER ? '' : 'letter-hover'}`} ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={canSelect ? handleClick : null}>
 			{text}
 			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
 		</div>

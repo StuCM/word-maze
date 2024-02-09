@@ -128,7 +128,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 								startY={line.startY}
 								endX={line.endX}
 								endY={line.endY}
-								key={`${index}-${gameState}`}
+								key={`${index}-line`}
 								hue={currentHue}
 								gameState={gameState}
 							/>

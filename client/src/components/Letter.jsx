@@ -43,7 +43,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 		if(letterColor !== primaryColor && gameState === GAME_STATES.WIN){
 			setLetterColor(correctColor)
 		}
-		else if(letterColor !== primaryColor && gameState !== GAME_STATES.RUNNING){
+		else if(letterColor !== primaryColor && gameState === GAME_STATES.INCORRECT){
 			setLetterColor(incorrectColor)
 		} 
 		else if(gameState === GAME_STATES.GAMEOVER){

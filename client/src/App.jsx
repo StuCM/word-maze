@@ -14,6 +14,8 @@ export const GlobalState = createContext();
 
 function App() {
 	const [gameState, setGameState] = useState(GAME_STATES.RUNNING);
+	const [board, setBoard] = useState();
+	const [word, setWord] = useState();
 	const [key, setKey] = useState(0);
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
 	const [score, setScore] = useState(0);
@@ -22,6 +24,28 @@ function App() {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
 	const description = 'this is a description placeholder';
+
+	useEffect(() => {
+		const fetchBoard = async () => {
+			console.log('fetchboard called')
+			try {
+				const response = await fetch('http://localhost:3000/api/getGameboard?wordSize=6&boardSize=6');
+				console.log("response",response)
+				const data = await response.json();
+				setBoard(data.board);
+				setWord(data.word);
+				console.log("data",data)
+			} catch (error) {
+				console.error(error);
+			}
+		};
+
+		fetchBoard();
+	}, []);
+
+	useEffect(() =>{
+		console.log(board)
+	},[board])
 
 	useEffect(() => {
 		switch (gameState) {
@@ -64,64 +88,6 @@ function App() {
 		setIsModalOpen(false);
 	};
 
-	const board = [
-		[
-			{ text: 'w', score: 4 },
-			{ text: 'o', score: 1 },
-			{ text: 'd', score: 2 },
-			{ text: 'r', score: 1 },
-			{ text: 'o', score: 1 },
-			{ text: 'w', score: 4 },
-		],
-		[
-			{ text: 'o', score: 1 },
-			{ text: 's', score: 1 },
-			{ text: 'd', score: 2 },
-			{ text: 'd', score: 2 },
-			{ text: 'w', score: 4 },
-			{ text: 's', score: 1 },
-		],
-		[
-			{ text: 's', score: 1 },
-			{ text: 'o', score: 1 },
-			{ text: 'w', score: 4 },
-			{ text: 'r', score: 1 },
-			{ text: 'o', score: 1 },
-			{ text: 'r', score: 1 },
-		],
-		[
-			{ text: 'r', score: 1 },
-			{ text: 's', score: 1 },
-			{ text: 'd', score: 2 },
-			{ text: 'o', score: 1 },
-			{ text: 'w', score: 4 },
-			{ text: 's', score: 1 },
-		],
-		[
-			{ text: 'o', score: 1 },
-			{ text: 'w', score: 4 },
-			{ text: 's', score: 1 },
-			{ text: 's', score: 1 },
-			{ text: 'd', score: 2 },
-			{ text: 'r', score: 1 },
-		],
-		[
-			{ text: 'w', score: 4 },
-			{ text: 'd', score: 2 },
-			{ text: 's', score: 1 },
-			{ text: 'o', score: 1 },
-			{ text: 'r', score: 1 },
-			{ text: 'd', score: 2 },
-		],
-	];
-	const board2 = [
-		['w', 'o', 'd', 'r', 'o'],
-		['o', 's', 'd', 'd', 'w'],
-		['s', 'o', 'w', 'r', 'o'],
-		['r', 's', 'd', 'o', 'w'],
-		['o', 'w', 's', 's', 'd'],
-	];
-	const word = 'WORDS';
 	return (
 		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
 			<main className='flex flex-col h-full'>
@@ -130,7 +96,7 @@ function App() {
 					<p className='text-lg'>Todays Word:</p>
 					<p className='text-3xl mt-1 font-bold tracking-wider'>{word}</p>
 				</div>
-				<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
+				{board && word && <Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />}
 				<ScoreUI attempts={remainingAttempts} score={score}>
 					<button
 						className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg'
@@ -141,7 +107,7 @@ function App() {
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					<ScoreContent dailyScore={dailyScore} word={word} description={description} />
+					{board && word && <ScoreContent dailyScore={dailyScore} word={word} description={description} />}
 					<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={handleModalClose}>
 						<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
 					</button>

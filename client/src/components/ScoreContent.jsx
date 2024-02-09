@@ -9,7 +9,7 @@ function ScoreContent({ score, dailyScore, word, description }) {
 					<div className='bg-letterBg rounded-xl py-1 px-5 innerShadow'>
 						<h3 className='text-2xl font-bold text-textSec'>Top Score</h3>
 					</div>
-					<p className='text-4xl font-bold m-2 text-letterBg'>{score}</p>
+					<p className='text-4xl font-bold m-2 text-letterBg' aria-label="topScore">{score}</p>
 				</div>
 				<table id='attempts' className='flex-3 mr-1 rounded-lg overflow-hidden'>
 					<tbody>
@@ -21,6 +21,7 @@ function ScoreContent({ score, dailyScore, word, description }) {
 							<tr
 								className={`text-textSec font-bold ${index % 2 !== 0 ? 'bg-letterBg' : 'bg-seconday'}`}
 								key={index}
+								aria-label="dailyScore"
 							>
 								<td className=' text-sm text-center'>0{item.attempt}</td>
 								<td className='text-lg py-0.5 text-center align-middle'>{item.score}</td>

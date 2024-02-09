@@ -76,19 +76,19 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	//allow selection when row or column matches prev selected
 	const isSelectable = () => {
 		if (isDisabled) return;
-		//allow full pick on first move
+		//Allow all first pick
 		if(selectedLetter.row === null) {
 			setCanSelect(true) 
 			return;
 		}
-		//restrict move to row or column on first move
+		//After first pick allow row and column
 		else if(!prevSelected.row){
 			if(column !== selectedLetter.column && row !== selectedLetter.row){
 				setCanSelect(false)
 			}
 		}
-		//if the last move was a row, then only column
-		else if(prevSelected.row === selectedLetter.row) {
+		//If last move was row, only allow column
+		if(prevSelected.row === selectedLetter.row) {
 			if(column === selectedLetter.column) {
 				setCanSelect(true);
 			} else {
@@ -104,6 +104,8 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 			}
 		}
 	}
+
+
 
 	const changeColor = () => {
 		let hue = currentHue;

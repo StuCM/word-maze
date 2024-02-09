@@ -39,6 +39,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
     }, [selectedLetter]);
 
 	useEffect(() => {
+		console.log(gameState)
 		if(letterColor !== primaryColor && gameState === GAME_STATES.WIN){
 			setLetterColor(correctColor)
 		}
@@ -121,7 +122,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	};
 
 	return (
-		<div className={`letter relative ${isDisabled || !canSelect ? '' : 'letter-hover'}`} ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={canSelect ? handleClick : null}>
+		<div className={`letter relative ${isDisabled || !canSelect || gameState === GAME_STATES.GAMEOVER ? '' : 'letter-hover'}`} ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={canSelect ? handleClick : null}>
 			{text}
 			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
 		</div>

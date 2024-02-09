@@ -6,6 +6,7 @@ import ScoreUI from './components/ScoreUI';
 import Modal from './components/Modal';
 import ScoreContent from './components/ScoreContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faX } from '@fortawesome/free-solid-svg-icons';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 
@@ -20,29 +21,47 @@ function App() {
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const description = 'this is a description placeholder'
+	const description = 'this is a description placeholder';
 
 	useEffect(() => {
-		if (gameState === GAME_STATES.INCORRECT) {
-			setTimeout(() => {
+		switch (gameState) {
+			case GAME_STATES.WIN:
 				setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
+				setIsModalOpen(true);
 				reduceAttempts();
-				setScore(0);
-			}, 1000);
-		} else if (gameState === GAME_STATES.WIN) {
-			setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
+				break;
+			case GAME_STATES.INCORRECT:
+				setTimeout(() => {
+					setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: 0 }]);
+					reduceAttempts();
+					setScore(0);
+				}, 1000);
 		}
 	}, [gameState]);
 
+	useEffect(() => {
+		if (remainingAttempts === 0) {
+			setGameState(GAME_STATES.GAMEOVER);
+			setIsModalOpen(true);
+		}
+	}, [remainingAttempts]);
+
 	const reduceAttempts = () => {
-		setIsModalOpen(false)
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
-		if (remainingAttempts > 1) {
+		if (remainingAttempts > 1 && gameState !== GAME_STATES.WIN) {
+			setKey((prevKey) => prevKey + 1);
+			setScore(0);
+			setGameState(GAME_STATES.RUNNING);
+		}
+	};
+
+	const handleModalClose = () => {
+		if (remainingAttempts > 0) {
 			setKey((prevKey) => prevKey + 1);
 			setGameState(GAME_STATES.RUNNING);
-		} else {
-			setGameState(GAME_STATES.GAMEOVER);
+			setScore(0);
 		}
+		setIsModalOpen(false);
 	};
 
 	const board = [
@@ -113,14 +132,20 @@ function App() {
 				</div>
 				<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
 				<ScoreUI attempts={remainingAttempts} score={score}>
-					<button className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg' onClick={reduceAttempts} data-testid='resetButton'>
+					<button
+						className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg'
+						onClick={reduceAttempts}
+						data-testid='resetButton'
+					>
 						<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					<ScoreContent score={score} dailyScore={dailyScore} word={word} description={description} />
+					<ScoreContent dailyScore={dailyScore} word={word} description={description} />
+					<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={handleModalClose}>
+						<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
+					</button>
 				</Modal>
-				<button onClick={() => setIsModalOpen(true)}>show modal</button>
 			</main>
 		</GlobalState.Provider>
 	);

@@ -1,6 +1,14 @@
-function ScoreContent({ score, dailyScore, word, description }) {
+import { useEffect, useState } from "react";
+
+function ScoreContent({ dailyScore, word, description }) {
 	const emptyRows = 3 - dailyScore.length;
     word = word.charAt(0) + word.slice(1).toLowerCase();
+
+	const [topScore, setTopScore] = useState();
+
+	useEffect(() => {
+		setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+	},[dailyScore])
 
 	return (
 		<section className='bg-textPrim border-4 rounded-2xl border-primary'>
@@ -9,7 +17,7 @@ function ScoreContent({ score, dailyScore, word, description }) {
 					<div className='bg-letterBg rounded-xl py-1 px-5 innerShadow'>
 						<h3 className='text-2xl font-bold text-textSec'>Top Score</h3>
 					</div>
-					<p className='text-4xl font-bold m-2 text-letterBg' aria-label="topScore">{score}</p>
+					<p className='text-4xl font-bold m-2 text-letterBg' aria-label="topScore">{topScore}</p>
 				</div>
 				<table id='attempts' className='flex-3 mr-1 rounded-lg overflow-hidden'>
 					<tbody>

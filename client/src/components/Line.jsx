@@ -1,15 +1,25 @@
 import { v4 as uuidv4 } from 'uuid';
-import { useEffect, useMemo } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { GAME_STATES } from '../constants/gameState';
 
 function Line({ startX, startY, endX, endY, hue, gameState }) {
 	const incorrectColor = '#F07167'
 	const correctColor = '#67ef6b'
 
+	let [color,setEndColor] = useState(incorrectColor);
+
+	useEffect(() => {
+		if (gameState === GAME_STATES.WIN) {
+			setEndColor(correctColor);
+		} else if (gameState === GAME_STATES.INCORRECT) {
+			setEndColor(incorrectColor);
+		}
+	}, [gameState]);
+
 	let startColor = useMemo(() => {
 		switch(gameState) {
 			case GAME_STATES.GAMEOVER:
-				return incorrectColor;
+				return color;
 			case GAME_STATES.INCORRECT:
 				return incorrectColor;
 			case GAME_STATES.WIN:
@@ -17,12 +27,12 @@ function Line({ startX, startY, endX, endY, hue, gameState }) {
 			case GAME_STATES.RUNNING:
 				return `hsl(${(hue - 15) % 357}, 82%, 67%)`;
 		}
-	}, [gameState]);
+	}, [gameState, color]);
 
 	let endColor = useMemo(() => {
 		switch(gameState) {
 			case GAME_STATES.GAMEOVER:
-				return incorrectColor;
+				return color;
 			case GAME_STATES.INCORRECT:
 				return incorrectColor;
 			case GAME_STATES.WIN:
@@ -30,7 +40,7 @@ function Line({ startX, startY, endX, endY, hue, gameState }) {
 			case GAME_STATES.RUNNING:
 				return `hsl(${(hue) % 357}, 82%, 67%)`;
 		}
-	}, [gameState]);
+	}, [gameState, color]);
 
 	const id = useMemo(() => uuidv4(), []);
 	

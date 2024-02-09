@@ -1,6 +1,9 @@
 const express = require('express');
+const cors = require('cors');
 const generateBoard = require('./utilities/gameboardUtilities');
 const app = express();
+
+app.use(cors());
 
 app.get('/api/getGameboard', async (req, res) => {
     const wordSize = parseInt(req.query.wordSize);
@@ -11,10 +14,10 @@ app.get('/api/getGameboard', async (req, res) => {
         return;
     }
 
-    const gameboard = await generateBoard(boardSize, wordSize);
+    const gameObject = await generateBoard(boardSize, wordSize);
 
-    if(gameboard) {
-        res.json(gameboard);
+    if(gameObject) {
+        res.json(gameObject);
     } else {
         res.status(404).json({ message: 'Game board not found' });
     }

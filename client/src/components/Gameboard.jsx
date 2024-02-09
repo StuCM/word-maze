@@ -22,6 +22,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 		//create array of selected word
 		if(selectedLetter.letter) {
 			setUserWord([...userWord, selectedLetter.letter])
+			console.log(userWord)
 		}
 		
 	}, [selectedLetter]);

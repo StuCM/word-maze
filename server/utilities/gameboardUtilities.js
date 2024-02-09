@@ -23,13 +23,17 @@ function addScores(word){
 	})
 }
 
+function randomIndex(maxNumber) {
+    return Math.floor(Math.random() * maxNumber);
+}
+
 async function generateBoard(size, wordLength) {
 	const word = await getRandomWord(wordLength);
 	if (!word) return null;
 	let board = createEmptyBoard(size);
 	const letterArray = addScores(word.word)
 	board = fillBoard(letterArray, board);
-	return board;
+	return { word: word.word, board };
 }
 
 function createEmptyBoard(size) {
@@ -44,29 +48,26 @@ function createEmptyBoard(size) {
 }
 
 function createWordPath(letterArray, board) {
-	const randomIndex = (maxNumber) => {
-		return Math.floor(Math.random() * maxNumber);
-	};
-	let nextDirection = 'vertical';
-	let row = randomIndex(letterArray.length);
-	let column = randomIndex(letterArray.length);
-	board[row][column] = letterArray[0];
-	letterArray.slice(1).forEach((letter) => {
-		if (nextDirection === 'vertical') {
-			do {
-				row = randomIndex(board.length);
-			} while (board[row][column] !== '');
-			board[row][column] = letter;
-			nextDirection = 'horizontal';
-		} else {
-			do {
-				column = randomIndex(board.length);
-			} while (board[row][column] !== '');
-			board[row][column] = letter;
-			nextDirection = 'vertical';
-		}
-	});
-	return board;
+    let nextDirection = 'vertical';
+    let row = randomIndex(letterArray.length);
+    let column = randomIndex(letterArray.length);
+    board[row][column] = letterArray[0];
+    letterArray.slice(1).forEach((letter) => {
+        if (nextDirection === 'vertical') {
+            do {
+                row = randomIndex(board.length);
+            } while (board[row][column] !== '');
+            board[row][column] = letter;
+            nextDirection = 'horizontal';
+        } else {
+            do {
+                column = randomIndex(board.length);
+            } while (board[row][column] !== '');
+            board[row][column] = letter;
+            nextDirection = 'vertical';
+        }
+    });
+    return board;
 }
 
 function fillBoard(letterArray, board) {

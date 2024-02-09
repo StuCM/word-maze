@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef, useContext } from 'react';
-import { GAME_STATES, LETTER_STATES } from '../constants/gameState';
+import { GAME_STATES } from '../constants/gameState';
 import { GlobalState} from '../App'
 
 function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
@@ -70,16 +70,25 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 		if(!canSelect || isDisabled || clicks === 0) return;
 		changeColor();
 		handleSelectLetter(row, column, position.x, position.y, position.height, text);
+		setIsDisabled(true);
 	};
 
 	//allow selection when row or column matches prev selected
 	const isSelectable = () => {
 		if (isDisabled) return;
-		if(prevSelected.row === null) {
+		//allow full pick on first move
+		if(selectedLetter.row === null) {
 			setCanSelect(true) 
 			return;
 		}
-		if(prevSelected.row === selectedLetter.row) {
+		//restrict move to row or column on first move
+		else if(!prevSelected.row){
+			if(column !== selectedLetter.column && row !== selectedLetter.row){
+				setCanSelect(false)
+			}
+		}
+		//if the last move was a row, then only column
+		else if(prevSelected.row === selectedLetter.row) {
 			if(column === selectedLetter.column) {
 				setCanSelect(true);
 			} else {
@@ -99,7 +108,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	const changeColor = () => {
 		let hue = currentHue;
 		if (!currentHue) {
-			hue = Math.floor(Math.random() * 357);
+			hue = 45;
 		} else {
 			hue = (currentHue + 15) % 357;
 			if (hue === 0) hue = 1;
@@ -109,7 +118,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 	};
 
 	return (
-		<div className='letter relative' ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={canSelect ? handleClick : null}>
+		<div className={`letter relative ${isDisabled || !canSelect ? '' : 'letter-hover'}`} ref={letterRef} style={{ background: letterColor, color: textColor }} onClick={canSelect ? handleClick : null}>
 			{text}
 			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
 		</div>

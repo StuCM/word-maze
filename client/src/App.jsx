@@ -32,7 +32,7 @@ function App() {
 				break;
 			case GAME_STATES.INCORRECT:
 				setTimeout(() => {
-					setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
+					setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: 0 }]);
 					reduceAttempts();
 					setScore(0);
 				}, 1000);
@@ -141,7 +141,7 @@ function App() {
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					<ScoreContent score={score} dailyScore={dailyScore} word={word} description={description} />
+					<ScoreContent dailyScore={dailyScore} word={word} description={description} />
 					<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={handleModalClose}>
 						<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
 					</button>

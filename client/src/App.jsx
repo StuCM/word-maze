@@ -33,21 +33,29 @@ function App() {
 		} else if (gameState === GAME_STATES.WIN) {
 			setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
 			setIsModalOpen(true);
+			reduceAttempts();
 		}
+		console.log(gameState)
 	}, [gameState]);
 
 	const reduceAttempts = () => {
-		setIsModalOpen(false);
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
-		if (remainingAttempts > 1) {
+		if (remainingAttempts > 1 && gameState !== GAME_STATES.WIN) {
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
 			setGameState(GAME_STATES.RUNNING);
 		} else {
+			console.log("changing")
 			setGameState(GAME_STATES.GAMEOVER);
 			setIsModalOpen(true);
 		}
 	};
+
+	const handleModalClose = () => {
+		if(gameState !== GAME_STATES.GAMEOVER) setGameState(GAME_STATES.RUNNING);
+		setIsModalOpen(false);
+		
+	}
 
 	const board = [
 		[
@@ -129,7 +137,7 @@ function App() {
 					<ScoreContent score={score} dailyScore={dailyScore} word={word} description={description} />
 					<button
 						className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg'
-						onClick={reduceAttempts}
+						onClick={handleModalClose}
 					>
 						<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
 					</button>

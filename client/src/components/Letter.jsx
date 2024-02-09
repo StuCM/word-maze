@@ -105,8 +105,6 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 		}
 	}
 
-
-
 	const changeColor = () => {
 		let hue = currentHue;
 		if (!currentHue) {

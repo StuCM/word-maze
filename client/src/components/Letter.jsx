@@ -45,6 +45,9 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 		else if(letterColor !== primaryColor && gameState !== GAME_STATES.RUNNING){
 			setLetterColor(incorrectColor)
 		} 
+		else if(gameState === GAME_STATES.GAMEOVER){
+			setIsDisabled(true);
+		}
 	}, [gameState])
 
 	//variables

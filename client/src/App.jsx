@@ -35,7 +35,6 @@ function App() {
 			setIsModalOpen(true);
 			reduceAttempts();
 		}
-		console.log(gameState)
 	}, [gameState]);
 
 	const reduceAttempts = () => {
@@ -45,7 +44,6 @@ function App() {
 			setScore(0);
 			setGameState(GAME_STATES.RUNNING);
 		} else {
-			console.log("changing")
 			setGameState(GAME_STATES.GAMEOVER);
 			setIsModalOpen(true);
 		}

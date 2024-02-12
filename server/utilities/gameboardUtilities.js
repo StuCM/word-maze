@@ -1,6 +1,8 @@
-const letterScores = require("./letterScores");
-import fetch from 'node-fetch';
-require('dotenv').config();
+import letterScores from "./letterScores";
+const fetch = require('node-fetch');
+import { config } from 'dotenv';
+
+config();
 
 const apiKey = process.env.API_KEY
 

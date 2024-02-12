@@ -4,16 +4,13 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "dev": "concurrently \"npm run dev --prefix ./server\" \"npm run dev --prefix ./client\""
   },
   "keywords": [],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "prettier": "3.2.4"
-  },
-  "dependencies": {
-    "dotenv": "^16.4.2",
-    "uuid": "^9.0.1"
   }
 }

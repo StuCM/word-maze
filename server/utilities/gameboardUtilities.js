@@ -1,8 +1,6 @@
-import letterScores from "./letterScores";
-import fetch from 'node-fetch';
-import { config } from 'dotenv';
-
-config();
+const letterScores = require("./letterScores");
+const axios = require('axios')
+require('dotenv').config();
 
 const apiKey = process.env.API_KEY
 
@@ -22,9 +20,8 @@ async function getRandomWord(wordLength) {
 	url.search = new URLSearchParams(params);
 	
 	try {
-		const response = await fetch(url)
-		const data = await response.json();
-		return data;
+		const response = await axios.get(url.toString())
+		return response.data;
 	} catch (error) {
 		console.error(error);
 		return null;
@@ -43,9 +40,8 @@ async function getDefinition(word) {
 	}
 	url.search = new URLSearchParams(params);
 	try {
-		const response = await fetch(url)
-		const data = await response.json()
-		const strWithoutHtml = data[0].text.replace(/<\/?[^>]+(>|$)/g, "")
+		const response = await axios.get(url.toString())
+		const strWithoutHtml = response.data[0].text.replace(/<\/?[^>]+(>|$)/g, "")
 		return strWithoutHtml
 	} catch (error) {
 		console.error('definition not found')
@@ -122,4 +118,4 @@ function fillBoard(letterArray, board) {
 	return board;
 }
 
-export default generateBoard;
+module.exports = generateBoard;

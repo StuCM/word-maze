@@ -1,6 +1,17 @@
 const express = require('express');
+const cors = require('cors');
 const generateBoard = require('./utilities/gameboardUtilities');
 const app = express();
+
+app.use(cors());
+require('dotenv').config()
+
+const PORT = process.env.PORT;
+
+const cache = {
+    daily: null,
+    gameObject: null
+}
 
 app.get('/api/getGameboard', async (req, res) => {
     const wordSize = parseInt(req.query.wordSize);
@@ -11,15 +22,22 @@ app.get('/api/getGameboard', async (req, res) => {
         return;
     }
 
-    const gameboard = await generateBoard(boardSize, wordSize);
-
-    if(gameboard) {
-        res.json(gameboard);
-    } else {
-        res.status(404).json({ message: 'Game board not found' });
+    if(!cache.gameObject){
+        cache.gameObject = await generateBoard(boardSize, wordSize);
     }
+
+    const gameObjectToSend = cache.gameObject;
+
+    res.json(gameObjectToSend);
+
+    cache.gameObject = await generateBoard(boardSize, wordSize);
 })
 
-app.listen(3000, () => {
-    console.log('Server listening on port 3000');
+app.listen(PORT, async () => {
+    console.log(`Server listening on port ${PORT}`);
+    if(!cache.gameObject){
+        const boardSize = 6
+        const wordSize = 6
+        cache.gameObject = await generateBoard(boardSize, wordSize);
+    }
 });

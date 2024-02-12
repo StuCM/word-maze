@@ -1,6 +1,18 @@
-function ScoreContent({ score, dailyScore, word, description }) {
+import { useEffect, useState } from "react";
+
+function ScoreContent({ dailyScore, word, definition }) {
 	const emptyRows = 3 - dailyScore.length;
     word = word.charAt(0) + word.slice(1).toLowerCase();
+
+	const [topScore, setTopScore] = useState(0);
+
+	useEffect(() => {
+		if(dailyScore.length > 0){
+			setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+		}
+		else { setTopScore(0)}
+		
+	},[dailyScore])
 
 	return (
 		<section className='bg-textPrim border-4 rounded-2xl border-primary'>
@@ -9,7 +21,7 @@ function ScoreContent({ score, dailyScore, word, description }) {
 					<div className='bg-letterBg rounded-xl py-1 px-5 innerShadow'>
 						<h3 className='text-2xl font-bold text-textSec'>Top Score</h3>
 					</div>
-					<p className='text-4xl font-bold m-2 text-letterBg' aria-label="topScore">{score}</p>
+					<p className='text-4xl font-bold m-2 text-letterBg' aria-label="topScore">{topScore}</p>
 				</div>
 				<table id='attempts' className='flex-3 mr-1 rounded-lg overflow-hidden'>
 					<tbody>
@@ -44,7 +56,7 @@ function ScoreContent({ score, dailyScore, word, description }) {
 			<div className='p-3 font-bold text-lg mb-2 text-textSec'>
 				<p className='mb-3'>Todays word is: </p>
 				<p className='text-2xl mb-2'>{word}</p>
-				<p className='font-semibold text-sm italic'>{description}</p>
+				<p className='font-semibold text-sm italic'>{definition}</p>
 			</div>
 		</section>
 	);

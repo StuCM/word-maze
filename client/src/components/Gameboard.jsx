@@ -28,17 +28,19 @@ function Gameboard({ board, word, gameState, setGameState }) {
 
 	//check for correct word
 	useEffect(()=>{
-		if(clicks === 0){
-			const selWord = userWord.join('');
-			console.log(selWord)
-			if(selWord === word) {
+		console.log(userWord)
+		if(clicks === 0){	
+			const selWord = userWord.join('').toLocaleLowerCase();
+			console.log(selWord, word)
+			if(selWord === word.toLowerCase()) {
 				console.log("Winner")
 				setGameState(GAME_STATES.WIN)
 				return;
 			}
-			else { console.log("Incorrect word, try again!")}
-			if(gameState === GAME_STATES.GAMEOVER) return;
-			setGameState(GAME_STATES.INCORRECT)
+			else { 
+				console.log("Incorrect word, try again!")
+				setGameState(GAME_STATES.INCORRECT)
+			}
 		}
 	},[userWord])
 
@@ -128,7 +130,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 								startY={line.startY}
 								endX={line.endX}
 								endY={line.endY}
-								key={`${index}-${gameState}`}
+								key={`${index}-line`}
 								hue={currentHue}
 								gameState={gameState}
 							/>

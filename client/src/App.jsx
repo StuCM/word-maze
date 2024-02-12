@@ -16,6 +16,7 @@ function App() {
 	const [gameState, setGameState] = useState(GAME_STATES.RUNNING);
 	const [board, setBoard] = useState();
 	const [word, setWord] = useState();
+	const [definition, setDefinition] = useState();
 	const [key, setKey] = useState(0);
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
 	const [score, setScore] = useState(0);
@@ -34,6 +35,7 @@ function App() {
 				const data = await response.json();
 				setBoard(data.board);
 				setWord(data.word);
+				setDefinition(data.definition);
 				console.log("data",data)
 			} catch (error) {
 				console.error(error);
@@ -112,7 +114,7 @@ function App() {
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					{board && word && <ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} description={description} />}
+					{board && word && <ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition} />}
 					<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={handleModalClose}>
 						<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
 					</button>

@@ -122,4 +122,4 @@ function fillBoard(letterArray, board) {
 	return board;
 }
 
-module.exports = generateBoard;
+export default generateBoard;

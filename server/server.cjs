@@ -1,6 +1,6 @@
 const express = require('express');
 const cors = require('cors');
-import generateBoard from './utilities/gameboardUtilities';
+import generateBoard from './utilities/gameboardUtilities.mjs';
 const app = express();
 
 app.use(cors());

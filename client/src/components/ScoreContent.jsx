@@ -1,13 +1,17 @@
 import { useEffect, useState } from "react";
 
-function ScoreContent({ dailyScore, word, description }) {
+function ScoreContent({ dailyScore, word, definition }) {
 	const emptyRows = 3 - dailyScore.length;
     word = word.charAt(0) + word.slice(1).toLowerCase();
 
-	const [topScore, setTopScore] = useState();
+	const [topScore, setTopScore] = useState(0);
 
 	useEffect(() => {
-		setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+		if(dailyScore.length > 0){
+			setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+		}
+		else { setTopScore(0)}
+		
 	},[dailyScore])
 
 	return (
@@ -52,7 +56,7 @@ function ScoreContent({ dailyScore, word, description }) {
 			<div className='p-3 font-bold text-lg mb-2 text-textSec'>
 				<p className='mb-3'>Todays word is: </p>
 				<p className='text-2xl mb-2'>{word}</p>
-				<p className='font-semibold text-sm italic'>{description}</p>
+				<p className='font-semibold text-sm italic'>{definition}</p>
 			</div>
 		</section>
 	);

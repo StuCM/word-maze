@@ -4,6 +4,9 @@ const generateBoard = require('./utilities/gameboardUtilities');
 const app = express();
 
 app.use(cors());
+require('dotenv').config()
+
+const PORT = process.env.PORT;
 
 const cache = {
     daily: null,
@@ -30,12 +33,11 @@ app.get('/api/getGameboard', async (req, res) => {
     cache.gameObject = await generateBoard(boardSize, wordSize);
 })
 
-app.listen(3000, async () => {
-    console.log('Server listening on port 3000');
+app.listen(PORT, async () => {
+    console.log(`Server listening on port ${PORT}`);
     if(!cache.gameObject){
         const boardSize = 6
         const wordSize = 6
         cache.gameObject = await generateBoard(boardSize, wordSize);
-        console.log("board made")
     }
 });

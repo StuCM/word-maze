@@ -1,18 +1,53 @@
 const letterScores = require("./letterScores");
+require('dotenv').config();
+
+const apiKey = process.env.API_KEY
 
 async function getRandomWord(wordLength) {
+	const url = new URL('http://api.wordnik.com/v4/words.json/randomWord')
+	const params = {
+		hasDictionaryDef: true,
+		includePartOfSpeech: 'noun,adjective,verb,adverb,pronoun',
+		maxCorpusCount: -1,
+		minDictionaryCount: 1,
+		maxDictionaryCount: 1,
+		minLength: wordLength,
+		maxLength: wordLength,
+		limit: 1,
+		api_key: apiKey
+	}
+	url.search = new URLSearchParams(params);
+	
 	try {
-		const apiKey = 'fgyd5zmp0gea651pdyd3djbmhx5y63meadu6096uxbt7jzbvh';
-		const response = await fetch(
-			`http://api.wordnik.com/v4/words.json/randomWords?hasDictionaryDef=true&maxCorpusCount=-1&minDictionaryCount=1&maxDictionaryCount=-1&minLength=${wordLength}&maxLength=${wordLength}&limit=1&api_key=${apiKey}`
-		);
+		const response = await fetch(url)
 		const data = await response.json();
-		console.log(data);
-		return data[0];
+		return data;
 	} catch (error) {
 		console.error(error);
 		return null;
 	}
+}
+
+async function getDefinition(word) {
+	const url = new URL(`https://api.wordnik.com/v4/word.json/${word}/definitions`)
+	const params = {
+		limit: 200,
+		includeRelated: false,
+		sourceDictionaries: 'all',
+		useCanonical: true,
+		includeTags: false,
+		api_key: apiKey
+	}
+	url.search = new URLSearchParams(params);
+	try {
+		const response = await fetch(url)
+		const data = await response.json()
+		const strWithoutHtml = data[0].text.replace(/<\/?[^>]+(>|$)/g, "")
+		return strWithoutHtml
+	} catch (error) {
+		console.error('definition not found')
+	}
+	
 }
 
 function addScores(word){
@@ -33,7 +68,8 @@ async function generateBoard(size, wordLength) {
 	let board = createEmptyBoard(size);
 	const letterArray = addScores(word.word)
 	board = fillBoard(letterArray, board);
-	return { word: word.word, board };
+	const definition = await getDefinition(word.word);
+	return { word: word.word, board, definition };
 }
 
 function createEmptyBoard(size) {

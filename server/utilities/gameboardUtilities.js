@@ -7,7 +7,7 @@ async function getRandomWord(wordLength) {
 	const url = new URL('http://api.wordnik.com/v4/words.json/randomWord')
 	const params = {
 		hasDictionaryDef: true,
-		includePartOfSpeech: 'noun,adjective,verb,adverb,pronoun',
+		includePartOfSpeech: 'noun,adjective,verb',
 		maxCorpusCount: -1,
 		minDictionaryCount: 1,
 		maxDictionaryCount: 1,
@@ -51,6 +51,7 @@ async function getDefinition(word) {
 }
 
 function addScores(word){
+	console.log(word)
 	const letters = word.split('');
 	return letters.map((letter) => {
 		const score = letterScores[letter.toLowerCase()];
@@ -64,7 +65,7 @@ function randomIndex(maxNumber) {
 
 async function generateBoard(size, wordLength) {
 	const word = await getRandomWord(wordLength);
-	if (!word) return null;
+	if (!word.word) return null;
 	let board = createEmptyBoard(size);
 	const letterArray = addScores(word.word)
 	board = fillBoard(letterArray, board);

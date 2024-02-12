@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faX } from '@fortawesome/free-solid-svg-icons';
 import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
+import loadingGIF from './assets/loading.gif'
 
 export const GlobalState = createContext();
 
@@ -21,6 +22,7 @@ function App() {
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
 	const [score, setScore] = useState(0);
 	const [dailyScore, setDailyScore] = useState([]);
+	const [isLoading, setIsLoading] = useState(false);
 
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
@@ -28,7 +30,7 @@ function App() {
 
 	useEffect(() => {
 		const fetchBoard = async () => {
-			console.log('fetchboard called')
+			setIsLoading(true);
 			try {
 				const response = await fetch('http://localhost:3000/api/getGameboard?wordSize=6&boardSize=6');
 				console.log("response",response)
@@ -36,7 +38,7 @@ function App() {
 				setBoard(data.board);
 				setWord(data.word);
 				setDefinition(data.definition);
-				console.log("data",data)
+				setIsLoading(false);
 			} catch (error) {
 				console.error(error);
 			}
@@ -99,11 +101,17 @@ function App() {
 		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
 			<main className='flex flex-col h-full'>
 				<Header />
+				{isLoading && <div className='flex items-center justify-center w-full loading'>
+					<div className='flex flex-col items-center'>
+						<p>Generating maze...</p>
+						<img src={loadingGIF} alt="loading" className='w-20 h-20' />
+					</div>
+				</div>}
 				<div className='mt-5'>
 					<p className='text-lg'>Todays Word:</p>
 					<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
 				</div>
-				{board && word && <Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />}
+				{word && board && <Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />}
 				<ScoreUI attempts={remainingAttempts} score={score}>
 					<button
 						className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg'

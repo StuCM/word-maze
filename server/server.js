@@ -5,6 +5,11 @@ const app = express();
 
 app.use(cors());
 
+const cache = {
+    daily: null,
+    gameObject: null
+}
+
 app.get('/api/getGameboard', async (req, res) => {
     const wordSize = parseInt(req.query.wordSize);
     const boardSize = parseInt(req.query.boardSize);
@@ -14,15 +19,23 @@ app.get('/api/getGameboard', async (req, res) => {
         return;
     }
 
-    const gameObject = await generateBoard(boardSize, wordSize);
-
-    if(gameObject) {
-        res.json(gameObject);
-    } else {
-        res.status(404).json({ message: 'Game board not found' });
+    if(!cache.gameObject){
+        cache.gameObject = await generateBoard(boardSize, wordSize);
     }
+
+    const gameObjectToSend = cache.gameObject;
+
+    res.json(gameObjectToSend);
+
+    cache.gameObject = await generateBoard(boardSize, wordSize);
 })
 
-app.listen(3000, () => {
+app.listen(3000, async () => {
     console.log('Server listening on port 3000');
+    if(!cache.gameObject){
+        const boardSize = 6
+        const wordSize = 6
+        cache.gameObject = await generateBoard(boardSize, wordSize);
+        console.log("board made")
+    }
 });

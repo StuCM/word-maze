@@ -1,5 +1,5 @@
 import letterScores from "./letterScores";
-const fetch = require('node-fetch');
+import fetch from 'node-fetch';
 import { config } from 'dotenv';
 
 config();

@@ -1,4 +1,5 @@
 const letterScores = require("./letterScores");
+const fetch = require('node-fetch');
 require('dotenv').config();
 
 const apiKey = process.env.API_KEY

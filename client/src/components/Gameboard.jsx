@@ -32,7 +32,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 		if(clicks === 0){	
 			const selWord = userWord.join('').toLocaleLowerCase();
 			console.log(selWord, word)
-			if(selWord === word) {
+			if(selWord === word.toLowerCase()) {
 				console.log("Winner")
 				setGameState(GAME_STATES.WIN)
 				return;

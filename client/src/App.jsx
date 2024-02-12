@@ -31,7 +31,13 @@ function App() {
 		const fetchBoard = async () => {
 			setIsLoading(true);
 			try {
-				const response = await fetch('http://localhost:3000/api/getGameboard?wordSize=6&boardSize=6');
+				const url = new URL(import.meta.env.VITE_API_URL)
+				const params = {
+					wordSize: 6,
+					boardSize: 6
+				}
+				url.search = new URLSearchParams(params)
+				const response = await fetch(url);
 				console.log("response",response)
 				const data = await response.json();
 				setBoard(data.board);

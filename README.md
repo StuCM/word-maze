@@ -10,7 +10,7 @@ The goal of this project was to develop a full-stack application and to enhance 
 
 - Frontend: React
 - Backend: Express
-- Deployment: Vercel
+- Deployment: Vercel for frontend and Adaptable.io for backend
 
 ## Features
 

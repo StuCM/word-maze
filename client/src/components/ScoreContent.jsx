@@ -4,10 +4,14 @@ function ScoreContent({ dailyScore, word, definition }) {
 	const emptyRows = 3 - dailyScore.length;
     word = word.charAt(0) + word.slice(1).toLowerCase();
 
-	const [topScore, setTopScore] = useState();
+	const [topScore, setTopScore] = useState(0);
 
 	useEffect(() => {
-		setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+		if(dailyScore.length > 0){
+			setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+		}
+		else { setTopScore(0)}
+		
 	},[dailyScore])
 
 	return (

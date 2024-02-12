@@ -6,8 +6,7 @@ import ScoreUI from './components/ScoreUI';
 import Modal from './components/Modal';
 import ScoreContent from './components/ScoreContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faX } from '@fortawesome/free-solid-svg-icons';
-import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
+import { faRotateLeft, faX } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 import loadingGIF from './assets/loading.gif'
 
@@ -100,7 +99,7 @@ function App() {
 	return (
 		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
 			<main className='flex flex-col h-full'>
-				<Header />
+				<Header openModal={setIsModalOpen} />
 				{isLoading && <div className='flex items-center justify-center w-full loading'>
 					<div className='flex flex-col items-center'>
 						<p>Generating maze...</p>

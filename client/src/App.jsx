@@ -82,6 +82,7 @@ function App() {
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
 		if (remainingAttempts > 1 && gameState !== GAME_STATES.WIN) {
+			setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: 0 }]);
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
 			setGameState(GAME_STATES.RUNNING);

@@ -130,7 +130,7 @@ function App() {
 					<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
 				</div>
 				{word && board && !isLoading && (
-					<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
+					<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} aria-label='gameboard'/>
 				)}
 				<ScoreUI attempts={remainingAttempts} score={score}>
 					<button

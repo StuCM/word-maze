@@ -149,6 +149,7 @@ function Letter({
 			ref={letterRef}
 			style={{ background: letterColor, color: textColor }}
 			onClick={canSelect ? handleClick : null}
+			data-testid="letter"
 		>
 			{text}
 			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>

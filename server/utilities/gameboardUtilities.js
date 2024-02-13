@@ -110,10 +110,22 @@ function createWordPath(letterArray, board) {
 function fillBoard(letterArray, board) {
 	board = createWordPath(letterArray, board);
 	board.forEach((row) => {
+		let letterCount = {
+			0: 0,
+			1: 0,
+			2: 0,
+			3: 0,
+			4: 0,
+			5: 0
+		}
 		row.forEach((_, index) => {
 			if (row[index] !== '') return;
-			const randomIndex = Math.floor(Math.random() * letterArray.length);
+			let randomIndex = Math.floor(Math.random() * letterArray.length);
+			while(letterCount[randomIndex] >= 2){
+				randomIndex = Math.floor(Math.random() * letterArray.length);
+			}
 			row[index] = letterArray[randomIndex];
+			letterCount[randomIndex] += 1
 		});
 	});
 	return board;

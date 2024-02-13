@@ -47,10 +47,11 @@ function App() {
 	const restartGame = () => {
 		setGameState(GAME_STATES.START);
 		fetchBoard();
-		setKey(0);
+		setKey((prevKey) => prevKey + 1);
 		setDailyScore([]);
 		setRemainingAttempts(3);
-	}
+		setIsModalOpen(false)
+	};
 
 	useEffect(() => {
 		fetchBoard();
@@ -96,8 +97,7 @@ function App() {
 	const handleModalClose = () => {
 		if (gameState === GAME_STATES.GAMEOVER) {
 			restartGame();
-		}
-		else if (gameState === GAME_STATES.WIN) {
+		} else if (gameState === GAME_STATES.WIN) {
 			setKey((prevKey) => prevKey + 1);
 			setGameState(GAME_STATES.START);
 			setScore(0);
@@ -126,7 +126,7 @@ function App() {
 					<p className='text-lg'>Todays Word:</p>
 					<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
 				</div>
-				{word && board && (
+				{word && board && !isLoading && (
 					<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />
 				)}
 				<ScoreUI attempts={remainingAttempts} score={score}>
@@ -171,6 +171,11 @@ function App() {
 							<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
 						)}
 					</button>
+					{gameState === GAME_STATES.WIN && (
+						<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={restartGame}>
+							<p className='text-textPrim font-semibold'>New Word</p>
+						</button>
+					)}
 				</Modal>
 			</main>
 		</GlobalState.Provider>

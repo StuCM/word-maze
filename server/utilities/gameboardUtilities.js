@@ -30,6 +30,7 @@ async function getRandomWord(wordLength) {
 }
 
 async function getDefinition(word) {
+	word = word.toLowerCase();
 	const url = new URL(`https://api.wordnik.com/v4/word.json/${word}/definitions`)
 	const params = {
 		limit: 200,

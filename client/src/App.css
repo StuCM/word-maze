@@ -29,7 +29,11 @@
     color: #505050
  }
 
- .letter-hover:hover {
+.letter-select {
+   background: #F0f0f0 !important;
+}
+
+ .letter-select:hover {
     background: #CACACA !important;
  }
 

@@ -24,28 +24,35 @@ function App() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	useEffect(() => {
-		const fetchBoard = async () => {
-			setIsLoading(true);
-			try {
-				const url = new URL(import.meta.env.VITE_API_URL);
-				const params = {
-					wordSize: 6,
-					boardSize: 6,
-				};
-				url.search = new URLSearchParams(params);
-				const response = await fetch(url);
-				console.log('response', response);
-				const data = await response.json();
-				setBoard(data.board);
-				setWord(data.word);
-				setDefinition(data.definition);
-				setIsLoading(false);
-			} catch (error) {
-				console.error(error);
-			}
-		};
+	const fetchBoard = async () => {
+		setIsLoading(true);
+		try {
+			const url = new URL(import.meta.env.VITE_API_URL);
+			const params = {
+				wordSize: 6,
+				boardSize: 6,
+			};
+			url.search = new URLSearchParams(params);
+			const response = await fetch(url);
+			const data = await response.json();
+			setBoard(data.board);
+			setWord(data.word);
+			setDefinition(data.definition);
+			setIsLoading(false);
+		} catch (error) {
+			console.error(error);
+		}
+	};
 
+	const restartGame = () => {
+		setGameState(GAME_STATES.START);
+		fetchBoard();
+		setKey(0);
+		setDailyScore([]);
+		setRemainingAttempts(3);
+	}
+
+	useEffect(() => {
 		fetchBoard();
 	}, []);
 
@@ -78,18 +85,21 @@ function App() {
 
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
-		if (remainingAttempts > 1 && gameState !== GAME_STATES.WIN) {
+		if (remainingAttempts >= 1 && gameState !== GAME_STATES.WIN) {
 			setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: 0 }]);
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
-			setGameState(GAME_STATES.RUNNING);
+			setGameState(GAME_STATES.START);
 		}
 	};
 
 	const handleModalClose = () => {
-		if (remainingAttempts > 0) {
+		if (gameState === GAME_STATES.GAMEOVER) {
+			restartGame();
+		}
+		else if (gameState === GAME_STATES.WIN) {
 			setKey((prevKey) => prevKey + 1);
-			setGameState(GAME_STATES.RUNNING);
+			setGameState(GAME_STATES.START);
 			setScore(0);
 		}
 		setIsModalOpen(false);

@@ -46,15 +46,6 @@ function App() {
 		}
 	};
 
-	const restartGame = () => {
-		setGameState(GAME_STATES.START);
-		fetchBoard();
-		setKey((prevKey) => prevKey + 1);
-		setDailyScore([]);
-		setRemainingAttempts(3);
-		setIsModalOpen(false);
-	};
-
 	useEffect(() => {
 		fetchBoard();
 	}, []);
@@ -85,6 +76,16 @@ function App() {
 			setIsModalOpen(true);
 		}
 	}, [remainingAttempts]);
+
+	const restartGame = () => {
+		setGameState(GAME_STATES.START);
+		fetchBoard();
+		setKey((prevKey) => prevKey + 1);
+		setDailyScore([]);
+		setRemainingAttempts(3);
+		setIsModalOpen(false);
+	};
+
 
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;

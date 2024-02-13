@@ -9,9 +9,10 @@ async function getRandomWord(wordLength) {
 	const params = {
 		hasDictionaryDef: true,
 		includePartOfSpeech: 'noun,adjective,verb',
+		excludePartOfSpeech: 'adverb,interjection,pronoun,preposition,abbreviation,affix,article,auxiliary-verb,conjunction,definite-article,family-name,given-name,idiom,imperative,noun-plural,noun-posessive,past-participle,phrasal-prefix,proper-noun,proper-noun-plural,proper-noun-posessive,suffix,verb-intransitive,verb-transitive',
 		maxCorpusCount: -1,
-		minDictionaryCount: 1,
-		maxDictionaryCount: 1,
+		minDictionaryCount: 5,
+		maxDictionaryCount: -1,
 		minLength: wordLength,
 		maxLength: wordLength,
 		limit: 1,

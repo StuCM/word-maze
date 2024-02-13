@@ -121,6 +121,7 @@ function fillBoard(letterArray, board) {
 		row.forEach((_, index) => {
 			if (row[index] !== '') return;
 			let randomIndex = Math.floor(Math.random() * letterArray.length);
+			//controls amount of each letter per line
 			while(letterCount[randomIndex] >= 2){
 				randomIndex = Math.floor(Math.random() * letterArray.length);
 			}

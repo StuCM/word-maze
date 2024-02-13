@@ -12,7 +12,7 @@ function Modal({ isModalOpen, children }) {
     }, [isModalOpen])
 
     return (
-        <dialog data-testid="dialog" className="relative w-11/12 rounded-lg bg-transparent max-w-md" ref={dialogRef}>
+        <dialog data-testid="dialog" className="relative w-11/12 rounded-lg bg-transparent max-w-md max-h-100" ref={dialogRef}>
             {children}
         </dialog>
     )

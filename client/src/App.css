@@ -48,3 +48,8 @@
     font-weight: bold;
     font-size: 1.6rem;
 }
+
+.howToStyle {
+   max-height: 75vh;
+   overflow: scroll;
+}

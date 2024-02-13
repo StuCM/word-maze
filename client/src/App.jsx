@@ -9,6 +9,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faRotateLeft, faX } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 import loadingGIF from './assets/loading.gif';
+import HowToContent from './components/HowToContent';
 
 export const GlobalState = createContext();
 
@@ -23,6 +24,7 @@ function App() {
 	const [dailyScore, setDailyScore] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
+	const [showScore, setShowScore] = useState(true);
 
 	const fetchBoard = async () => {
 		setIsLoading(true);
@@ -50,7 +52,7 @@ function App() {
 		setKey((prevKey) => prevKey + 1);
 		setDailyScore([]);
 		setRemainingAttempts(3);
-		setIsModalOpen(false)
+		setIsModalOpen(false);
 	};
 
 	useEffect(() => {
@@ -103,6 +105,7 @@ function App() {
 			setScore(0);
 		}
 		setIsModalOpen(false);
+		setShowScore(true)
 	};
 
 	const capitaliseWord = (word) => {
@@ -113,7 +116,7 @@ function App() {
 	return (
 		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
 			<main className='flex flex-col h-full'>
-				<Header openModal={setIsModalOpen} />
+				<Header openModal={setIsModalOpen} setShowScore={setShowScore}/>
 				{isLoading && (
 					<div className='flex items-center justify-center w-full loading'>
 						<div className='flex flex-col items-center'>
@@ -140,7 +143,7 @@ function App() {
 					</button>
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
-					{board && word && (
+					{showScore && board && word ? (
 						<ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition}>
 							{gameState === GAME_STATES.WIN && (
 								<>
@@ -161,17 +164,19 @@ function App() {
 								</>
 							)}
 						</ScoreContent>
+					) : (
+						<HowToContent />
 					)}
-					<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={handleModalClose}>
-						{gameState === GAME_STATES.GAMEOVER ? (
+					<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg sticky bottom-0' onClick={handleModalClose}>
+						{gameState === GAME_STATES.GAMEOVER && showScore ? (
 							<p className='text-textPrim font-semibold'>New Word</p>
-						) : gameState === GAME_STATES.WIN ? (
+						) : gameState === GAME_STATES.WIN && showScore ? (
 							<p className='text-textPrim font-semibold'>Try again?</p>
 						) : (
 							<FontAwesomeIcon icon={faX} className='text-lg text-textPrim' />
 						)}
 					</button>
-					{gameState === GAME_STATES.WIN && (
+					{gameState === GAME_STATES.WIN && showScore && (
 						<button className='py-2 px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={restartGame}>
 							<p className='text-textPrim font-semibold'>New Word</p>
 						</button>

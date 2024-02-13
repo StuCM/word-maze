@@ -29,7 +29,11 @@
     color: #505050
  }
 
- .letter-hover:hover {
+.letter-select {
+   background: #F0f0f0 !important;
+}
+
+ .letter-select:hover {
     background: #CACACA !important;
  }
 
@@ -43,4 +47,9 @@
     height: 400px;
     font-weight: bold;
     font-size: 1.6rem;
+}
+
+.howToStyle {
+   max-height: 75vh;
+   overflow: scroll;
 }

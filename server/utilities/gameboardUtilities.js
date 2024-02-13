@@ -9,9 +9,10 @@ async function getRandomWord(wordLength) {
 	const params = {
 		hasDictionaryDef: true,
 		includePartOfSpeech: 'noun,adjective,verb',
+		excludePartOfSpeech: 'adverb,interjection,pronoun,preposition,abbreviation,affix,article,auxiliary-verb,conjunction,definite-article,family-name,given-name,idiom,imperative,noun-plural,noun-posessive,past-participle,phrasal-prefix,proper-noun,proper-noun-plural,proper-noun-posessive,suffix,verb-intransitive,verb-transitive',
 		maxCorpusCount: -1,
-		minDictionaryCount: 1,
-		maxDictionaryCount: 1,
+		minDictionaryCount: 5,
+		maxDictionaryCount: -1,
 		minLength: wordLength,
 		maxLength: wordLength,
 		limit: 1,
@@ -29,6 +30,7 @@ async function getRandomWord(wordLength) {
 }
 
 async function getDefinition(word) {
+	word = word.toLowerCase();
 	const url = new URL(`https://api.wordnik.com/v4/word.json/${word}/definitions`)
 	const params = {
 		limit: 200,
@@ -109,10 +111,23 @@ function createWordPath(letterArray, board) {
 function fillBoard(letterArray, board) {
 	board = createWordPath(letterArray, board);
 	board.forEach((row) => {
+		let letterCount = {
+			0: 0,
+			1: 0,
+			2: 0,
+			3: 0,
+			4: 0,
+			5: 0
+		}
 		row.forEach((_, index) => {
 			if (row[index] !== '') return;
-			const randomIndex = Math.floor(Math.random() * letterArray.length);
+			let randomIndex = Math.floor(Math.random() * letterArray.length);
+			//controls amount of each letter per line
+			while(letterCount[randomIndex] >= 2){
+				randomIndex = Math.floor(Math.random() * letterArray.length);
+			}
 			row[index] = letterArray[randomIndex];
+			letterCount[randomIndex] += 1
 		});
 	});
 	return board;

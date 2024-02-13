@@ -113,6 +113,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
 										clicks={clicks}
+										setGameState={setGameState}
 										gameState={gameState}
 										key={`${rowIndex}-${columnIndex}`}
 									/>

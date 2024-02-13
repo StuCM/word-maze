@@ -13,7 +13,7 @@ import loadingGIF from './assets/loading.gif'
 export const GlobalState = createContext();
 
 function App() {
-	const [gameState, setGameState] = useState(GAME_STATES.RUNNING);
+	const [gameState, setGameState] = useState(GAME_STATES.START);
 	const [board, setBoard] = useState();
 	const [word, setWord] = useState();
 	const [definition, setDefinition] = useState();
@@ -22,10 +22,7 @@ function App() {
 	const [score, setScore] = useState(0);
 	const [dailyScore, setDailyScore] = useState([]);
 	const [isLoading, setIsLoading] = useState(false);
-
 	const [isModalOpen, setIsModalOpen] = useState(false);
-
-	const description = 'this is a description placeholder';
 
 	useEffect(() => {
 		const fetchBoard = async () => {
@@ -120,8 +117,9 @@ function App() {
 				{word && board && <Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} />}
 				<ScoreUI attempts={remainingAttempts} score={score}>
 					<button
-						className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg'
+						className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg disabled: opacity-60'
 						onClick={reduceAttempts}
+						disabled={gameState === GAME_STATES.START}
 						data-testid='resetButton'
 					>
 						<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />

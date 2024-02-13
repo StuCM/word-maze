@@ -1,13 +1,7 @@
 export const GAME_STATES = {
+    START: 'start',
     RUNNING: 'running',
     INCORRECT: 'incorrect',
     GAMEOVER: 'gameover',
     WIN: 'win'
 }
-
-export const LETTER_STATES = {
-    SELECTED: 'selected',
-    CAN_SELECT: 'canSelect',
-    DISABLED: 'disabled',
-    UNSELECTABLE: 'unselectable'
-  };

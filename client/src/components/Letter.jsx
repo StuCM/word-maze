@@ -2,7 +2,7 @@ import { useEffect, useState, useRef, useContext } from 'react';
 import { GAME_STATES } from '../constants/gameState';
 import { GlobalState} from '../App'
 
-function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, gameState }) {
+function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, handleSelectLetter, prevSelected, row, column, clicks, setGameState, gameState }) {
 	//state
 	const { setScore } = useContext(GlobalState);
 
@@ -75,6 +75,7 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 
 	const handleClick = () => {
 		if(!canSelect || isDisabled || clicks === 0) return;
+		if(gameState === GAME_STATES.START) setGameState(GAME_STATES.RUNNING);
 		changeColor();
 		handleSelectLetter(row, column, position.x, position.y, position.height, text);
 		setIsDisabled(true);

@@ -47,6 +47,9 @@ function Letter({ text, letterScore, currentHue, setCurrentHue, selectedLetter, 
 			setLetterColor(incorrectColor)
 		} 
 		else if(gameState === GAME_STATES.GAMEOVER){
+			if(letterColor !== primaryColor && letterColor !== correctColor){
+				setLetterColor(incorrectColor);
+			}
 			setIsDisabled(true);
 		}
 	}, [gameState])

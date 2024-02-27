@@ -52,7 +52,6 @@ async function getDefinition(word) {
 }
 
 function addScores(word){
-	console.log(word)
 	const letters = word.split('');
 	return letters.map((letter) => {
 		const score = letterScores[letter.toLowerCase()];

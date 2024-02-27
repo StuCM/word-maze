@@ -53,10 +53,6 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		console.log(board);
-	}, [board]);
-
-	useEffect(() => {
 		switch (gameState) {
 			case GAME_STATES.WIN:
 				setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);

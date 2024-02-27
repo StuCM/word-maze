@@ -152,7 +152,7 @@ function Letter({
 			data-testid="letter"
 		>
 			{text}
-			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
+			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{Math.round(letterScore*multiplier)}</span>
 		</div>
 	);
 }

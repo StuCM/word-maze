@@ -15,6 +15,7 @@ function Letter({
 	clicks,
 	setGameState,
 	gameState,
+	multiplier
 }) {
 	//state
 	const { setScore } = useContext(GlobalState);
@@ -52,7 +53,6 @@ function Letter({
 	}, [selectedLetter]);
 
 	useEffect(() => {
-		console.log(gameState);
 		if (letterColor !== primaryColor && gameState === GAME_STATES.WIN) {
 			setLetterColor(correctColor);
 		} else if (letterColor !== primaryColor && gameState === GAME_STATES.INCORRECT) {
@@ -80,7 +80,7 @@ function Letter({
 		) {
 			setTextColor('#CACACA');
 			setIsDisabled(true);
-			setScore((prevScore) => prevScore + letterScore);
+			setScore((prevScore) => prevScore + (letterScore * multiplier));
 		}
 	};
 

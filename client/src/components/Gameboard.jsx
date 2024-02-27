@@ -1,4 +1,5 @@
 import { GAME_STATES } from '../constants/gameState';
+import { calculateScoreMultiplier } from '../services/scoreCalculator';
 import Letter from './Letter';
 import Line from './Line';
 import React, { useState, useRef, useEffect } from 'react';
@@ -12,8 +13,14 @@ function Gameboard({ board, word, gameState, setGameState }) {
 	const [clicks, setClicks] = useState(word.length)
 	const [userWord, setUserWord] = useState([]);
 	const gameboard = useRef();
+	const [scoreMultiplier, setScoreMultiplier] = useState(1);
 
 	//hooks
+	useEffect(() => {
+		const multiplier = calculateScoreMultiplier(board);
+		setScoreMultiplier(multiplier);
+	}, []);
+
 	useEffect(() => {
 		const newLine = createLine();
 		if (newLine) {
@@ -115,6 +122,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 										clicks={clicks}
 										setGameState={setGameState}
 										gameState={gameState}
+										multipiyer={scoreMultiplier}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);

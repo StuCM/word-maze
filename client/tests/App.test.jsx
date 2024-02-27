@@ -14,7 +14,7 @@ function createFetchResponse(data) {
 describe('App test', () => {
 	it('renders title', () => {
 		render(<App />);
-		expect(screen.getByText(/Word-Maze/i)).toBeDefined();
+		expect(screen.getByText(/Muddle/i)).toBeDefined();
 	});
 	it('renders the score', () => {
 		render(<App />);

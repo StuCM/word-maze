@@ -10,6 +10,7 @@ import { faRotateLeft, faX } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 import loadingGIF from './assets/loading.gif';
 import HowToContent from './components/HowToContent';
+import HighScores from './components/HighScores';
 
 export const GlobalState = createContext();
 
@@ -25,6 +26,7 @@ function App() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [showScore, setShowScore] = useState(true);
+	const [showHighScore, setShowHighScore] = useState(false);
 
 	const fetchBoard = async () => {
 		setIsLoading(true);
@@ -169,33 +171,45 @@ function App() {
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
 					{showScore && board && word ? (
-						<ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition}>
-							{gameState === GAME_STATES.WIN && (
-								<>
-									<h2 className='text-2xl font-bold'>Winner!</h2>
-									<p className='text-sm font-medium my-2'>
-										{remainingAttempts >= 1
-											? 'You still have attempts left, try and beat your score?'
-											: 'Try a new word?'}
-									</p>
-									<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-								</>
-							)}
-							{gameState === GAME_STATES.GAMEOVER && (
-								<>
-									<h2 className='text-2xl font-bold'>Game Over</h2>
-									<p className='text-sm font-medium my-2'>Try a new word?</p>
-									<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-								</>
-							)}
-						</ScoreContent>
+						<>
+							<div className='flex items-center justify-center mx-auto px-3'>
+								<button onClick={() => setShowHighScore(false)} className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>
+									Current Score
+								</button>
+								<button onClick={() => setShowHighScore(true)} className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>
+									High Scores
+								</button>
+							</div>
+							{showHighScore ? (
+								<HighScores />
+							):
+								<ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition}>
+								{gameState === GAME_STATES.WIN && (
+									<>
+										<h2 className='text-2xl font-bold'>Winner!</h2>
+										<p className='text-sm font-medium my-2'>
+											{remainingAttempts >= 1
+												? 'You still have attempts left, try and beat your score?'
+												: 'Try a new word?'}
+										</p>
+										<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+									</>
+								)}
+								{gameState === GAME_STATES.GAMEOVER && (
+									<>
+										<h2 className='text-2xl font-bold'>Game Over</h2>
+										<p className='text-sm font-medium my-2'>Try a new word?</p>
+										<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+									</>
+								)}
+							</ScoreContent>
+							
+							}
+							
+						</>
 					) : (
 						<HowToContent />
 					)}
-					<div className='flex items-center justify-center mx-auto px-3'>
-						<button className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>Current Score</button>
-						<button className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>High Scores</button>
-					</div>
 					<button
 						className='flex items-center justify-center mx-auto px-3 bg-seconday m-4 rounded-full shadow-lg sticky bottom-0'
 						onClick={handleModalClose}

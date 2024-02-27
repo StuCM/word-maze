@@ -109,6 +109,7 @@ function App() {
 		}
 		setIsModalOpen(false);
 		setShowScore(true);
+		setShowHighScore(false);
 	};
 
 	const capitaliseWord = (word) => {

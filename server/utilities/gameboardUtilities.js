@@ -35,7 +35,7 @@ async function getDefinition(word) {
 	const params = {
 		limit: 200,
 		includeRelated: false,
-		sourceDictionaries: 'all',
+		sourceDictionaries: 'wordnet',
 		useCanonical: true,
 		includeTags: false,
 		api_key: apiKey

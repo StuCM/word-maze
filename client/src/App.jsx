@@ -10,6 +10,7 @@ import { faRotateLeft, faX } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 import loadingGIF from './assets/loading.gif';
 import HowToContent from './components/HowToContent';
+import HighScores from './components/HighScores';
 
 export const GlobalState = createContext();
 
@@ -25,6 +26,7 @@ function App() {
 	const [isLoading, setIsLoading] = useState(false);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [showScore, setShowScore] = useState(true);
+	const [showHighScore, setShowHighScore] = useState(false);
 
 	const fetchBoard = async () => {
 		setIsLoading(true);
@@ -51,13 +53,10 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		console.log(board);
-	}, [board]);
-
-	useEffect(() => {
 		switch (gameState) {
 			case GAME_STATES.WIN:
 				setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
+				pushScore(word, score);
 				setIsModalOpen(true);
 				reduceAttempts();
 				break;
@@ -86,7 +85,6 @@ function App() {
 		setIsModalOpen(false);
 	};
 
-
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
 		if (remainingAttempts >= 1 && gameState !== GAME_STATES.WIN) {
@@ -106,7 +104,8 @@ function App() {
 			setScore(0);
 		}
 		setIsModalOpen(false);
-		setShowScore(true)
+		setShowScore(true);
+		setShowHighScore(false);
 	};
 
 	const capitaliseWord = (word) => {
@@ -114,10 +113,27 @@ function App() {
 		return word.toUpperCase();
 	};
 
+	const getTopScores = () => {
+		const storedScores = window.localStorage.getItem('topScores');
+		return storedScores ? JSON.parse(storedScores) : [];
+	};
+
+	const pushScore = (word, score) => {
+		let topScores = getTopScores();
+		const entry = { word, score };
+		//add new score
+		topScores.push(entry);
+		//sort scores in order and top 10
+		topScores.sort((a, b) => b.score - a.score);
+		topScores = topScores.slice(0, 10);
+
+		window.localStorage.setItem('topScores', JSON.stringify(topScores));
+	};
+
 	return (
 		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
 			<main className='flex flex-col h-full'>
-				<Header openModal={setIsModalOpen} setShowScore={setShowScore}/>
+				<Header openModal={setIsModalOpen} setShowScore={setShowScore} />
 				{isLoading && (
 					<div className='flex items-center justify-center w-full loading'>
 						<div className='flex flex-col items-center'>
@@ -131,7 +147,14 @@ function App() {
 					<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
 				</div>
 				{word && board && !isLoading && (
-					<Gameboard key={key} board={board} word={word} gameState={gameState} setGameState={setGameState} aria-label='gameboard'/>
+					<Gameboard
+						key={key}
+						board={board}
+						word={word}
+						gameState={gameState}
+						setGameState={setGameState}
+						aria-label='gameboard'
+					/>
 				)}
 				<ScoreUI attempts={remainingAttempts} score={score}>
 					<button
@@ -145,30 +168,49 @@ function App() {
 				</ScoreUI>
 				<Modal isModalOpen={isModalOpen}>
 					{showScore && board && word ? (
-						<ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition}>
-							{gameState === GAME_STATES.WIN && (
-								<>
-									<h2 className='text-2xl font-bold'>Winner!</h2>
-									<p className='text-sm font-medium my-2'>
-										{remainingAttempts >= 1
-											? 'You still have attempts left, try and beat your score?'
-											: 'Try a new word?'}
-									</p>
-									<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-								</>
-							)}
-							{gameState === GAME_STATES.GAMEOVER && (
-								<>
-									<h2 className='text-2xl font-bold'>Game Over</h2>
-									<p className='text-sm font-medium my-2'>Try a new word?</p>
-									<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-								</>
-							)}
-						</ScoreContent>
+						<>
+							<div className='flex items-center justify-center mx-auto px-3'>
+								<button onClick={() => setShowHighScore(false)} className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>
+									Current Score
+								</button>
+								<button onClick={() => setShowHighScore(true)} className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>
+									High Scores
+								</button>
+							</div>
+							{showHighScore ? (
+								<HighScores />
+							):
+								<ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition}>
+								{gameState === GAME_STATES.WIN && (
+									<>
+										<h2 className='text-2xl font-bold'>Winner!</h2>
+										<p className='text-sm font-medium my-2'>
+											{remainingAttempts >= 1
+												? 'You still have attempts left, try and beat your score?'
+												: 'Try a new word?'}
+										</p>
+										<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+									</>
+								)}
+								{gameState === GAME_STATES.GAMEOVER && (
+									<>
+										<h2 className='text-2xl font-bold'>Game Over</h2>
+										<p className='text-sm font-medium my-2'>Try a new word?</p>
+										<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+									</>
+								)}
+							</ScoreContent>
+							
+							}
+							
+						</>
 					) : (
 						<HowToContent />
 					)}
-					<button className='flex items-center justify-center mx-auto px-3 bg-seconday m-4 rounded-full shadow-lg sticky bottom-0' onClick={handleModalClose}>
+					<button
+						className='flex items-center justify-center mx-auto px-3 bg-seconday m-4 rounded-full shadow-lg sticky bottom-0'
+						onClick={handleModalClose}
+					>
 						{gameState === GAME_STATES.GAMEOVER && showScore ? (
 							<p className='text-textPrim font-semibold min-w-20'>New Word</p>
 						) : gameState === GAME_STATES.WIN && showScore ? (

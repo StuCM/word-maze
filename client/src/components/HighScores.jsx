@@ -1,14 +1,14 @@
 function HighScores() {
 	let storedScores = window.localStorage.getItem('topScores');
 	storedScores = storedScores ? JSON.parse(storedScores) : [];
-    const emptyRows = 10 - storedScores.length;
+    const emptyRows = 5 - storedScores.length;
 
     const capitaliseWord = (word) => {
         return word.charAt(0).toUpperCase() + word.slice(1);
     }
 
 	return (
-		<section className='flex justify-center items-center min-h-60 bg-primary border-4 rounded-xl border-primary'>
+		<section className='flex justify-center items-center bg-primary border-4 rounded-xl border-primary'>
 			<table id='scores' className='flex-3 mr-1 rounded-lg overflow-hidden w-full'>
 				<tbody>
 					<tr className='bg-primary text-letterBg border-b-2 border-primary'>

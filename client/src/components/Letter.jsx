@@ -80,7 +80,7 @@ function Letter({
 		) {
 			setTextColor('#CACACA');
 			setIsDisabled(true);
-			setScore((prevScore) => prevScore + (letterScore * multiplier));
+			setScore((prevScore) => prevScore + Math.round(letterScore * multiplier));
 		}
 	};
 

@@ -122,7 +122,7 @@ function Gameboard({ board, word, gameState, setGameState }) {
 										clicks={clicks}
 										setGameState={setGameState}
 										gameState={gameState}
-										multipiyer={scoreMultiplier}
+										multiplier={scoreMultiplier}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);

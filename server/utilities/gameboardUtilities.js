@@ -85,21 +85,21 @@ function createEmptyBoard(size) {
 }
 
 function createWordPath(letterArray, board) {
-    let nextDirection = 'vertical';
-    let row = randomIndex(letterArray.length);
-    let column = randomIndex(letterArray.length);
+    let nextDirection = Math.random() < 0.5 ? 'vertical' : 'horizontal';
+    let row = randomIndex(board.length);
+    let column = randomIndex(board.length);
     board[row][column] = letterArray[0];
     letterArray.slice(1).forEach((letter) => {
         if (nextDirection === 'vertical') {
             do {
                 row = randomIndex(board.length);
-            } while (board[row][column] !== '');
+            } while (board[row][column] !== '' && board[row][column] !== letter);
             board[row][column] = letter;
             nextDirection = 'horizontal';
         } else {
             do {
                 column = randomIndex(board.length);
-            } while (board[row][column] !== '');
+            } while (board[row][column] !== '' && board[row][column] !== letter);
             board[row][column] = letter;
             nextDirection = 'vertical';
         }
@@ -108,7 +108,9 @@ function createWordPath(letterArray, board) {
 }
 
 function fillBoard(letterArray, board) {
-	board = createWordPath(letterArray, board);
+	for (let i = 0; i < 3; i++) {
+        board = createWordPath(letterArray, board);
+    }
 	board.forEach((row) => {
 		let letterCount = {
 			0: 0,

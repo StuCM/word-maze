@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "concurrently \"npm run dev --prefix ./server\" \"npm run dev --prefix ./client\"",
-    "install": "npm install --prefix ./server && npm install --prefix ./client"
+    "install": "npm install --prefix ./server && npm install --prefix ./client",
+    "test": "cd client && npm run test"
   },
   "keywords": [],
   "author": "",

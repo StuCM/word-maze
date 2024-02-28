@@ -1,5 +1,5 @@
 export const initialState = {
-    isModelOpen: true,
+    isModalOpen: true,
     content: 'menu'
 }
 

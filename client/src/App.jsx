@@ -15,6 +15,7 @@ import { fetchBoard, fetchDailyBoard } from './services/fetchRequests';
 import { initialState, modalReducer } from './reducer/modalReducer';
 import ModalNav from './components/ModalNav';
 import ModalButtons from './components/ModalButtons';
+import Menu from './components/Menu';
 
 export const GlobalState = createContext();
 
@@ -160,6 +161,7 @@ function App() {
 				<Modal>
 					{board && word && (
 						<>
+							{modalState.content === 'menu' && <Menu />}
 							{modalState.content !== 'help' && <ModalNav />}
 							{modalState.content === 'highScore' && <HighScores />}
 							{modalState.content === 'score' && (

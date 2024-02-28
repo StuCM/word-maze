@@ -9,7 +9,7 @@ function HighScores() {
 
 	return (
 		<section className='flex justify-center items-center bg-primary border-4 rounded-xl border-primary'>
-			<table id='scores' className='flex-3 mr-1 rounded-lg overflow-hidden w-full'>
+			<table id='scores' className='flex-3 rounded-lg overflow-hidden w-full'>
 				<tbody>
 					<tr className='bg-primary text-letterBg border-b-2 border-primary'>
 						<th className='py-1.5 px-2 text-xl text-center'>Word</th>

@@ -11,6 +11,7 @@ import { GAME_STATES } from './constants/gameState';
 import loadingGIF from './assets/loading.gif';
 import HowToContent from './components/HowToContent';
 import HighScores from './components/HighScores';
+import { fetchBoard, fetchDailyBoard } from './services/fetchRequests';
 
 export const GlobalState = createContext();
 
@@ -23,33 +24,23 @@ function App() {
 	const [remainingAttempts, setRemainingAttempts] = useState(3);
 	const [score, setScore] = useState(0);
 	const [dailyScore, setDailyScore] = useState([]);
-	const [isLoading, setIsLoading] = useState(false);
+	const [isLoading, setIsLoading] = useState(true);
 	const [isModalOpen, setIsModalOpen] = useState(false);
 	const [showScore, setShowScore] = useState(true);
 	const [showHighScore, setShowHighScore] = useState(false);
+	const [dailyChallenge, setDailyChallenge] = useState();
 
-	const fetchBoard = async () => {
-		setIsLoading(true);
-		try {
-			const url = new URL(import.meta.env.VITE_API_URL);
-			const params = {
-				wordSize: 6,
-				boardSize: 6,
-			};
-			url.search = new URLSearchParams(params);
-			const response = await fetch(url);
-			const data = await response.json();
+	useEffect(() => {
+		const fetchData = async () => {
+			const data = await fetchBoard();
+			const dailyData = await fetchDailyBoard();
+			setDailyChallenge(dailyData);
 			setBoard(data.board);
 			setWord(data.word);
 			setDefinition(data.definition);
 			setIsLoading(false);
-		} catch (error) {
-			console.error(error);
-		}
-	};
-
-	useEffect(() => {
-		fetchBoard();
+		};
+		fetchData();
 	}, []);
 
 	useEffect(() => {
@@ -170,39 +161,47 @@ function App() {
 					{showScore && board && word ? (
 						<>
 							<div className='flex items-center justify-center mx-auto px-3'>
-								<button onClick={() => setShowHighScore(false)} className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>
+								<button
+									onClick={() => setShowHighScore(false)}
+									className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'
+								>
 									Current Score
 								</button>
-								<button onClick={() => setShowHighScore(true)} className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'>
+								<button
+									onClick={() => setShowHighScore(true)}
+									className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'
+								>
 									High Scores
 								</button>
 							</div>
 							{showHighScore ? (
 								<HighScores />
-							):
-								<ScoreContent dailyScore={dailyScore} word={capitaliseWord(word)} definition={definition}>
-								{gameState === GAME_STATES.WIN && (
-									<>
-										<h2 className='text-2xl font-bold'>Winner!</h2>
-										<p className='text-sm font-medium my-2'>
-											{remainingAttempts >= 1
-												? 'You still have attempts left, try and beat your score?'
-												: 'Try a new word?'}
-										</p>
-										<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-									</>
-								)}
-								{gameState === GAME_STATES.GAMEOVER && (
-									<>
-										<h2 className='text-2xl font-bold'>Game Over</h2>
-										<p className='text-sm font-medium my-2'>Try a new word?</p>
-										<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-									</>
-								)}
-							</ScoreContent>
-							
-							}
-							
+							) : (
+								<ScoreContent
+									dailyScore={dailyScore}
+									word={capitaliseWord(word)}
+									definition={definition}
+								>
+									{gameState === GAME_STATES.WIN && (
+										<>
+											<h2 className='text-2xl font-bold'>Winner!</h2>
+											<p className='text-sm font-medium my-2'>
+												{remainingAttempts >= 1
+													? 'You still have attempts left, try and beat your score?'
+													: 'Try a new word?'}
+											</p>
+											<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+										</>
+									)}
+									{gameState === GAME_STATES.GAMEOVER && (
+										<>
+											<h2 className='text-2xl font-bold'>Game Over</h2>
+											<p className='text-sm font-medium my-2'>Try a new word?</p>
+											<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+										</>
+									)}
+								</ScoreContent>
+							)}
 						</>
 					) : (
 						<HowToContent />

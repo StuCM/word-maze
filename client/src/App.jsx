@@ -95,17 +95,17 @@ function App() {
 	};
 
 	const showMenu = () => {
-        setGameMode('menu');
-        dispatch({type: 'OPEN_MODAL', payload: 'menu'})
+		setGameMode('menu');
+		dispatch({ type: 'OPEN_MODAL', payload: 'menu' });
 		resetGame();
-    }
+	};
 
 	const resetGame = () => {
 		setKey((prevKey) => prevKey + 1);
 		setRemainingAttempts(3);
 		setGameState(GAME_STATES.START);
 		setScore(0);
-	}
+	};
 
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
@@ -117,23 +117,26 @@ function App() {
 		}
 	};
 
+	const handleWinState = () => {
+		setKey((prevKey) => prevKey + 1);
+		setGameState(GAME_STATES.START);
+		setScore(0);
+	};
+	
 	const handleModalClose = () => {
 		if (gameMode === 'daily') {
 			if (gameState === GAME_STATES.GAMEOVER) {
 				setGameMode('menu');
-				dispatch({ type: 'OPEN_MODAL' })
+				dispatch({ type: 'OPEN_MODAL' });
 			} else if (gameState === GAME_STATES.WIN) {
-				setKey((prevKey) => prevKey + 1);
-				setGameState(GAME_STATES.START);
-				setScore(0);
+				handleWinState();
 			}
-		}
-		if (gameState === GAME_STATES.GAMEOVER) {
-			restartGame();
-		} else if (gameState === GAME_STATES.WIN) {
-			setKey((prevKey) => prevKey + 1);
-			setGameState(GAME_STATES.START);
-			setScore(0);
+		} else {
+			if (gameState === GAME_STATES.GAMEOVER) {
+				restartGame();
+			} else if (gameState === GAME_STATES.WIN) {
+				handleWinState();
+			}
 		}
 		dispatch({ type: 'CLOSE_MODAL' });
 	};
@@ -217,7 +220,11 @@ function App() {
 						</>
 					)}
 					{modalState.content !== 'menu' && (
-						<ModalButtons handleModalClose={handleModalClose} restartGame={restartGame} showMenu={showMenu} />
+						<ModalButtons
+							handleModalClose={handleModalClose}
+							restartGame={restartGame}
+							showMenu={showMenu}
+						/>
 					)}
 				</Modal>
 			</main>

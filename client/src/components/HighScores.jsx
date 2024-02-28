@@ -1,7 +1,7 @@
 function HighScores() {
 	let storedScores = window.localStorage.getItem('topScores');
 	storedScores = storedScores ? JSON.parse(storedScores) : [];
-    const emptyRows = 5 - storedScores.length;
+    const emptyRows = Math.max(0, 5 - storedScores.length);
 
     const capitaliseWord = (word) => {
         return word.charAt(0).toUpperCase() + word.slice(1);

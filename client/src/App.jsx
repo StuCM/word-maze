@@ -90,20 +90,22 @@ function App() {
 	const restartGame = () => {
 		setGameState(GAME_STATES.START);
 		fetchPractice();
-		setKey((prevKey) => prevKey + 1);
-		setDailyScore([]);
-		setRemainingAttempts(3);
+		resetGame();
 		dispatch({ type: 'CLOSE_MODAL' });
 	};
 
 	const showMenu = () => {
         setGameMode('menu');
         dispatch({type: 'OPEN_MODAL', payload: 'menu'})
+		resetGame();
+    }
+
+	const resetGame = () => {
 		setKey((prevKey) => prevKey + 1);
 		setRemainingAttempts(3);
 		setGameState(GAME_STATES.START);
 		setScore(0);
-    }
+	}
 
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;

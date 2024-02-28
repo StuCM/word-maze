@@ -21,7 +21,7 @@ export const GlobalState = createContext();
 
 function App() {
 	const [gameState, setGameState] = useState(GAME_STATES.START);
-	const [gameMode, setGameMode] = useState('menu')
+	const [gameMode, setGameMode] = useState('menu');
 	const [board, setBoard] = useState();
 	const [word, setWord] = useState();
 	const [definition, setDefinition] = useState();
@@ -36,19 +36,19 @@ function App() {
 
 	useEffect(() => {
 		fetchPractice();
-		fetchDaily()
+		fetchDaily();
 	}, []);
 
 	useEffect(() => {
-		if(gameMode === 'daily') {
+		if (gameMode === 'daily') {
 			setBoard(dailyChallenge.board);
 			setWord(dailyChallenge.word);
-			dispatch({type:'CLOSE_MODAL'})
-		} else if(gameMode === 'practice') {
+			dispatch({ type: 'CLOSE_MODAL' });
+		} else if (gameMode === 'practice') {
 			fetchPractice();
-			dispatch({type:'CLOSE_MODAL'})
+			dispatch({ type: 'CLOSE_MODAL' });
 		}
-	},[gameMode])
+	}, [gameMode]);
 
 	useEffect(() => {
 		switch (gameState) {
@@ -85,16 +85,25 @@ function App() {
 	const fetchDaily = async () => {
 		const dailyData = await fetchDailyBoard();
 		setDailyChallenge(dailyData);
-	}
+	};
 
 	const restartGame = () => {
 		setGameState(GAME_STATES.START);
-		fetchData();
+		fetchPractice();
 		setKey((prevKey) => prevKey + 1);
 		setDailyScore([]);
 		setRemainingAttempts(3);
 		dispatch({ type: 'CLOSE_MODAL' });
 	};
+
+	const showMenu = () => {
+        setGameMode('menu');
+        dispatch({type: 'OPEN_MODAL', payload: 'menu'})
+		setKey((prevKey) => prevKey + 1);
+		setRemainingAttempts(3);
+		setGameState(GAME_STATES.START);
+		setScore(0);
+    }
 
 	const reduceAttempts = () => {
 		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
@@ -107,6 +116,16 @@ function App() {
 	};
 
 	const handleModalClose = () => {
+		if (gameMode === 'daily') {
+			if (gameState === GAME_STATES.GAMEOVER) {
+				setGameMode('menu');
+				dispatch({ type: 'OPEN_MODAL' })
+			} else if (gameState === GAME_STATES.WIN) {
+				setKey((prevKey) => prevKey + 1);
+				setGameState(GAME_STATES.START);
+				setScore(0);
+			}
+		}
 		if (gameState === GAME_STATES.GAMEOVER) {
 			restartGame();
 		} else if (gameState === GAME_STATES.WIN) {
@@ -140,7 +159,7 @@ function App() {
 	};
 
 	return (
-		<GlobalState.Provider value={{ score, setScore, modalState, dispatch, setGameMode }}>
+		<GlobalState.Provider value={{ score, setScore, modalState, dispatch, setGameMode, gameMode, gameState }}>
 			<main className='flex flex-col h-full'>
 				<Header />
 				{gameMode !== 'menu' && (
@@ -195,7 +214,9 @@ function App() {
 							{modalState.content === 'help' && <HowToContent />}
 						</>
 					)}
-					{modalState.content !== 'menu' && <ModalButtons handleModalClose={handleModalClose} />}
+					{modalState.content !== 'menu' && (
+						<ModalButtons handleModalClose={handleModalClose} restartGame={restartGame} showMenu={showMenu} />
+					)}
 				</Modal>
 			</main>
 		</GlobalState.Provider>

@@ -21,6 +21,7 @@ export const GlobalState = createContext();
 
 function App() {
 	const [gameState, setGameState] = useState(GAME_STATES.START);
+	const [gameMode, setGameMode] = useState('menu')
 	const [board, setBoard] = useState();
 	const [word, setWord] = useState();
 	const [definition, setDefinition] = useState();
@@ -34,17 +35,20 @@ function App() {
 	const [modalState, dispatch] = useReducer(modalReducer, initialState);
 
 	useEffect(() => {
-		const fetchData = async () => {
-			const data = await fetchBoard();
-			const dailyData = await fetchDailyBoard();
-			setDailyChallenge(dailyData);
-			setBoard(data.board);
-			setWord(data.word);
-			setDefinition(data.definition);
-			setIsLoading(false);
-		};
-		fetchData();
+		fetchPractice();
+		fetchDaily()
 	}, []);
+
+	useEffect(() => {
+		if(gameMode === 'daily') {
+			setBoard(dailyChallenge.board);
+			setWord(dailyChallenge.word);
+			dispatch({type:'CLOSE_MODAL'})
+		} else if(gameMode === 'practice') {
+			fetchPractice();
+			dispatch({type:'CLOSE_MODAL'})
+		}
+	},[gameMode])
 
 	useEffect(() => {
 		switch (gameState) {
@@ -70,9 +74,22 @@ function App() {
 		}
 	}, [remainingAttempts]);
 
+	const fetchPractice = async () => {
+		const data = await fetchBoard();
+		setBoard(data.board);
+		setWord(data.word);
+		setDefinition(data.definition);
+		setIsLoading(false);
+	};
+
+	const fetchDaily = async () => {
+		const dailyData = await fetchDailyBoard();
+		setDailyChallenge(dailyData);
+	}
+
 	const restartGame = () => {
 		setGameState(GAME_STATES.START);
-		fetchBoard();
+		fetchData();
 		setKey((prevKey) => prevKey + 1);
 		setDailyScore([]);
 		setRemainingAttempts(3);
@@ -123,59 +140,62 @@ function App() {
 	};
 
 	return (
-		<GlobalState.Provider value={{ score, setScore, modalState, dispatch }}>
+		<GlobalState.Provider value={{ score, setScore, modalState, dispatch, setGameMode }}>
 			<main className='flex flex-col h-full'>
 				<Header />
-				{isLoading && (
-					<div className='flex items-center justify-center w-full loading'>
-						<div className='flex flex-col items-center'>
-							<p>Generating maze...</p>
-							<img src={loadingGIF} alt='loading' className='w-20 h-20' />
+				{gameMode !== 'menu' && (
+					<>
+						{isLoading && (
+							<div className='flex items-center justify-center w-full loading'>
+								<div className='flex flex-col items-center'>
+									<p>Generating maze...</p>
+									<img src={loadingGIF} alt='loading' className='w-20 h-20' />
+								</div>
+							</div>
+						)}
+						<div className='mt-5'>
+							<p className='text-lg'>Todays Word:</p>
+							<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
 						</div>
-					</div>
+						{word && board && !isLoading && (
+							<Gameboard
+								key={key}
+								board={board}
+								word={word}
+								gameState={gameState}
+								setGameState={setGameState}
+								aria-label='gameboard'
+							/>
+						)}
+						<ScoreUI attempts={remainingAttempts} score={score}>
+							<button
+								className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg disabled:opacity-60'
+								onClick={reduceAttempts}
+								disabled={gameState === GAME_STATES.START}
+								data-testid='resetButton'
+							>
+								<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
+							</button>
+						</ScoreUI>
+					</>
 				)}
-				<div className='mt-5'>
-					<p className='text-lg'>Todays Word:</p>
-					<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
-				</div>
-				{word && board && !isLoading && (
-					<Gameboard
-						key={key}
-						board={board}
-						word={word}
-						gameState={gameState}
-						setGameState={setGameState}
-						aria-label='gameboard'
-					/>
-				)}
-				<ScoreUI attempts={remainingAttempts} score={score}>
-					<button
-						className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg disabled:opacity-60'
-						onClick={reduceAttempts}
-						disabled={gameState === GAME_STATES.START}
-						data-testid='resetButton'
-					>
-						<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
-					</button>
-				</ScoreUI>
 				<Modal>
 					{board && word && (
 						<>
 							{modalState.content === 'menu' && <Menu />}
-							{modalState.content !== 'help' && <ModalNav />}
+							{modalState.content !== 'help' && modalState.content !== 'menu' && <ModalNav />}
 							{modalState.content === 'highScore' && <HighScores />}
 							{modalState.content === 'score' && (
 								<ScoreContent
 									dailyScore={dailyScore}
 									word={capitaliseWord(word)}
 									definition={definition}
-								>
-								</ScoreContent>
+								></ScoreContent>
 							)}
 							{modalState.content === 'help' && <HowToContent />}
 						</>
 					)}
-					<ModalButtons handleModalClose={handleModalClose} />
+					{modalState.content !== 'menu' && <ModalButtons handleModalClose={handleModalClose} />}
 				</Modal>
 			</main>
 		</GlobalState.Provider>

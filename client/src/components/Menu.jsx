@@ -1,7 +1,18 @@
-import MuddleTitle from './MuddleTitle';
+import { useContext } from 'react';
+import { GlobalState } from '../App';
 
 function Menu() {
-	const buttons = ['Daily Word', 'Practice', 'How to Play', 'High Scores'];
+	const { setGameMode } = useContext(GlobalState);
+	const buttons = [
+		{ text: 'Daily Word', mode: 'daily' },
+		{ text: 'Practice', mode: 'practice' },
+		{ text: 'How to Play', mode: '' },
+		{ text: 'High Scores', mode: '' },
+	];
+
+	const handleClick = (mode) => {
+		setGameMode(mode);
+	};
 
 	return (
 		<section className='max-w-72 mx-auto'>
@@ -14,8 +25,9 @@ function Menu() {
 					<button
 						key={index}
 						className={`${index === buttons.length - 1 ? '' : 'mb-6'} min-w-40 rounded-3xl bg-seconday text-textPrim font-semibold hover:bg-secondaryDarker`}
+                        onClick={() => handleClick(button.mode)}
 					>
-						{button}
+						{button.text}
 					</button>
 				))}
 			</div>

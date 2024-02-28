@@ -1,17 +1,20 @@
 import './App.css';
-import { useEffect, useState, createContext, useRef, forwardRef } from 'react';
+import { useEffect, useState, createContext, useReducer } from 'react';
 import Header from './components/Header';
 import Gameboard from './components/Gameboard';
 import ScoreUI from './components/ScoreUI';
 import Modal from './components/Modal';
 import ScoreContent from './components/ScoreContent';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faRotateLeft, faX } from '@fortawesome/free-solid-svg-icons';
+import { faRotateLeft } from '@fortawesome/free-solid-svg-icons';
 import { GAME_STATES } from './constants/gameState';
 import loadingGIF from './assets/loading.gif';
 import HowToContent from './components/HowToContent';
 import HighScores from './components/HighScores';
 import { fetchBoard, fetchDailyBoard } from './services/fetchRequests';
+import { initialState, modalReducer } from './reducer/modalReducer';
+import ModalNav from './components/ModalNav';
+import ModalButtons from './components/ModalButtons';
 
 export const GlobalState = createContext();
 
@@ -25,10 +28,9 @@ function App() {
 	const [score, setScore] = useState(0);
 	const [dailyScore, setDailyScore] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
-	const [isModalOpen, setIsModalOpen] = useState(false);
-	const [showScore, setShowScore] = useState(true);
-	const [showHighScore, setShowHighScore] = useState(false);
 	const [dailyChallenge, setDailyChallenge] = useState();
+
+	const [modalState, dispatch] = useReducer(modalReducer, initialState);
 
 	useEffect(() => {
 		const fetchData = async () => {
@@ -48,7 +50,7 @@ function App() {
 			case GAME_STATES.WIN:
 				setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
 				pushScore(word, score);
-				setIsModalOpen(true);
+				dispatch({ type: 'OPEN_MODAL', payload: 'score' });
 				reduceAttempts();
 				break;
 			case GAME_STATES.INCORRECT:
@@ -63,7 +65,7 @@ function App() {
 	useEffect(() => {
 		if (remainingAttempts === 0) {
 			setGameState(GAME_STATES.GAMEOVER);
-			setIsModalOpen(true);
+			dispatch({ type: 'OPEN_MODAL', payload: 'score' });
 		}
 	}, [remainingAttempts]);
 
@@ -73,7 +75,7 @@ function App() {
 		setKey((prevKey) => prevKey + 1);
 		setDailyScore([]);
 		setRemainingAttempts(3);
-		setIsModalOpen(false);
+		dispatch({ type: 'CLOSE_MODAL' });
 	};
 
 	const reduceAttempts = () => {
@@ -94,9 +96,7 @@ function App() {
 			setGameState(GAME_STATES.START);
 			setScore(0);
 		}
-		setIsModalOpen(false);
-		setShowScore(true);
-		setShowHighScore(false);
+		dispatch({ type: 'CLOSE_MODAL' });
 	};
 
 	const capitaliseWord = (word) => {
@@ -122,9 +122,9 @@ function App() {
 	};
 
 	return (
-		<GlobalState.Provider value={{ score, setScore, setIsModalOpen }}>
+		<GlobalState.Provider value={{ score, setScore, modalState, dispatch }}>
 			<main className='flex flex-col h-full'>
-				<Header openModal={setIsModalOpen} setShowScore={setShowScore} />
+				<Header />
 				{isLoading && (
 					<div className='flex items-center justify-center w-full loading'>
 						<div className='flex flex-col items-center'>
@@ -157,72 +157,23 @@ function App() {
 						<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
 					</button>
 				</ScoreUI>
-				<Modal isModalOpen={isModalOpen}>
-					{showScore && board && word ? (
+				<Modal>
+					{board && word && (
 						<>
-							<div className='flex items-center justify-center mx-auto px-3'>
-								<button
-									onClick={() => setShowHighScore(false)}
-									className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'
-								>
-									Current Score
-								</button>
-								<button
-									onClick={() => setShowHighScore(true)}
-									className='flex items-center justify-center mx-auto px-3 min-w-36 text-textPrim font-semibold bg-seconday m-4 rounded-full shadow-lg'
-								>
-									High Scores
-								</button>
-							</div>
-							{showHighScore ? (
-								<HighScores />
-							) : (
+							{modalState.content !== 'help' && <ModalNav />}
+							{modalState.content === 'highScore' && <HighScores />}
+							{modalState.content === 'score' && (
 								<ScoreContent
 									dailyScore={dailyScore}
 									word={capitaliseWord(word)}
 									definition={definition}
 								>
-									{gameState === GAME_STATES.WIN && (
-										<>
-											<h2 className='text-2xl font-bold'>Winner!</h2>
-											<p className='text-sm font-medium my-2'>
-												{remainingAttempts >= 1
-													? 'You still have attempts left, try and beat your score?'
-													: 'Try a new word?'}
-											</p>
-											<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-										</>
-									)}
-									{gameState === GAME_STATES.GAMEOVER && (
-										<>
-											<h2 className='text-2xl font-bold'>Game Over</h2>
-											<p className='text-sm font-medium my-2'>Try a new word?</p>
-											<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
-										</>
-									)}
 								</ScoreContent>
 							)}
+							{modalState.content === 'help' && <HowToContent />}
 						</>
-					) : (
-						<HowToContent />
 					)}
-					<button
-						className='flex items-center justify-center mx-auto px-3 bg-seconday m-4 rounded-full shadow-lg sticky bottom-0'
-						onClick={handleModalClose}
-					>
-						{gameState === GAME_STATES.GAMEOVER && showScore ? (
-							<p className='text-textPrim font-semibold min-w-20'>New Word</p>
-						) : gameState === GAME_STATES.WIN && showScore ? (
-							<p className='text-textPrim font-semibold min-w-20'>Try again?</p>
-						) : (
-							<FontAwesomeIcon icon={faX} className='text-md text-textPrim' />
-						)}
-					</button>
-					{gameState === GAME_STATES.WIN && showScore && (
-						<button className='px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={restartGame}>
-							<p className='text-textPrim font-semibold min-w-20'>New Word</p>
-						</button>
-					)}
+					<ModalButtons handleModalClose={handleModalClose} />
 				</Modal>
 			</main>
 		</GlobalState.Provider>

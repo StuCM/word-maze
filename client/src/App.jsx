@@ -14,7 +14,6 @@ import HighScores from './components/HighScores';
 import { fetchBoard, fetchDailyBoard } from './services/fetchRequests';
 import { initialState as modalInitialState, modalReducer } from './reducer/modalReducer';
 import { initialState as gameInitialState, gameReducer } from './reducer/gameReducer';
-import ModalNav from './components/ModalNav';
 import ModalButtons from './components/ModalButtons';
 import Menu from './components/Menu';
 
@@ -35,6 +34,7 @@ function App() {
 		fetchPractice();
 		fetchDaily();
 		checkDates();
+		//window.localStorage.clear()
 	}, []);
 
 	useEffect(() => {
@@ -51,14 +51,20 @@ function App() {
 	useEffect(() => {
 		switch (gameState.gameState) {
 			case GAME_STATES.WIN:
-				gameDispatch({type:'SET_DAILY_SCORE', payload:([...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: score }])});
+				gameDispatch({
+					type: 'SET_DAILY_SCORE',
+					payload: [...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: score }],
+				});
 				pushScore(gameState.word, score);
 				modalDispatch({ type: 'OPEN_MODAL', payload: 'score' });
 				reduceAttempts();
 				break;
 			case GAME_STATES.INCORRECT:
 				setTimeout(() => {
-					gameDispatch({type:'SET_DAILY_SCORE', payload:([...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }])});
+					gameDispatch({
+						type: 'SET_DAILY_SCORE',
+						payload: [...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }],
+					});
 					reduceAttempts();
 					setScore(0);
 				}, 1000);
@@ -66,7 +72,7 @@ function App() {
 	}, [gameState.gameState]);
 
 	useEffect(() => {
-		if(gameState.gameMode === 'daily') {
+		if (gameState.gameMode === 'daily') {
 			dailyStorage();
 		}
 		if (gameState.remainingAttempts === 0) {
@@ -76,25 +82,28 @@ function App() {
 	}, [gameState.remainingAttempts]);
 
 	const dailyStorage = () => {
-		if(gameState.gameMode === 'daily') {
-			window.localStorage.setItem('daily', JSON.stringify({
-				...dailyCheck, 
-				remainingAttempts: gameState.remainingAttempts,
-				dailyScore: gameState.dailyScore,
-				date: new Date().toDateString()
-			}))
+		if (gameState.gameMode === 'daily') {
+			window.localStorage.setItem(
+				'daily',
+				JSON.stringify({
+					...dailyCheck,
+					remainingAttempts: gameState.remainingAttempts,
+					dailyScore: gameState.dailyScore,
+					date: new Date().toDateString(),
+				})
+			);
 		}
-	}
+	};
 
 	//checks if the user has played the daily game today
 	const checkDates = () => {
 		const today = new Date().toDateString();
 		const storedDate = JSON.parse(window.localStorage.getItem('daily'))?.date;
 
-		if(storedDate !== today){
-			window.localStorage.removeItem('daily')
+		if (storedDate !== today) {
+			window.localStorage.removeItem('daily');
 		}
-	}
+	};
 
 	const fetchPractice = async () => {
 		const data = await fetchBoard();
@@ -129,13 +138,16 @@ function App() {
 		gameDispatch({ type: 'RESET_ATTEMPTS' });
 		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
 		setScore(0);
-		gameDispatch({type:'SET_DAILY_SCORE', payload:[]});
+		gameDispatch({ type: 'SET_DAILY_SCORE', payload: [] });
 	};
 
 	const reduceAttempts = () => {
 		gameDispatch({ type: 'REDUCE_ATTEMPTS' });
 		if (gameState.remainingAttempts >= 1 && gameState.gameState !== GAME_STATES.WIN) {
-			gameDispatch({type:'SET_DAILY_SCORE', payload:([...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }])});
+			gameDispatch({
+				type: 'SET_DAILY_SCORE',
+				payload: [...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }],
+			});
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
 			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
@@ -176,16 +188,22 @@ function App() {
 		return storedScores ? JSON.parse(storedScores) : [];
 	};
 
+	const getDailyTopScores = () => {
+		const storedScores = window.localStorage.getItem('dailyTopScores');
+		return storedScores ? JSON.parse(storedScores) : [];
+	};
+
 	const pushScore = (word, score) => {
-		let topScores = getTopScores();
+		let topScores = gameState.gameMode === 'daily' ? getDailyTopScores() : getTopScores();
 		const entry = { word, score };
 		//add new score
 		topScores.push(entry);
 		//sort scores in order and top 10
 		topScores.sort((a, b) => b.score - a.score);
 		topScores = topScores.slice(0, 10);
-
-		window.localStorage.setItem('topScores', JSON.stringify(topScores));
+		gameState.gameMode === 'daily'
+			? window.localStorage.setItem('dailyTopScores', JSON.stringify(topScores))
+			: window.localStorage.setItem('topScores', JSON.stringify(topScores));
 	};
 
 	return (
@@ -225,13 +243,9 @@ function App() {
 					{gameState.board && gameState.word && (
 						<>
 							{modalState.content === 'menu' && <Menu />}
-							{modalState.content !== 'help' && modalState.content !== 'menu' && <ModalNav />}
 							{modalState.content === 'highScore' && <HighScores />}
 							{modalState.content === 'score' && (
-								<ScoreContent
-									word={capitaliseWord(gameState.word)}
-									definition={gameState.definition}
-								>
+								<ScoreContent word={capitaliseWord(gameState.word)} definition={gameState.definition}>
 									{gameState.gameState === GAME_STATES.WIN && (
 										<>
 											<h2 className='text-2xl font-bold'>Winner!</h2>

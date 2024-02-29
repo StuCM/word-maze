@@ -69,9 +69,7 @@ async function generateBoard(size, wordLength) {
 	let board = createEmptyBoard(size);
 	const letterArray = addScores(word.word);
 	board = fillBoard(letterArray, board);
-	console.log(board);
 	board = scoreMultiplier(board);
-	console.log(board);
 	const definition = await getDefinition(word.word);
 	return { word: word.word, board, definition };
 }
@@ -81,7 +79,6 @@ function scoreMultiplier(board) {
 		return (acc += letter.score);
 	}, 0);
 	const multiplier = (100 / boardTotal).toFixed(2);
-	console.log("multi",multiplier)
 	return board.map((row) => {
 		return row.map((letter) => {
 			return { ...letter, score: Math.round(letter.score * multiplier) };

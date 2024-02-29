@@ -36,10 +36,8 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		console.log("this", gameState.gameMode)
 		if (gameState.gameMode === 'daily') {
-			console.log("running")
-			gameDispatch({ type: 'SET_BOARD', payload: dailyChallenge.board})
+			gameDispatch({ type: 'SET_BOARD', payload: dailyChallenge.board });
 			gameDispatch({ type: 'SET_WORD', payload: dailyChallenge.word });
 			modalDispatch({ type: 'CLOSE_MODAL' });
 		} else if (gameState.gameMode === 'practice') {
@@ -67,16 +65,16 @@ function App() {
 
 	useEffect(() => {
 		if (gameState.remainingAttempts === 0) {
-			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.GAMEOVER})
+			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.GAMEOVER });
 			modalDispatch({ type: 'OPEN_MODAL', payload: 'score' });
 		}
 	}, [gameState.remainingAttempts]);
 
 	const fetchPractice = async () => {
 		const data = await fetchBoard();
-		gameDispatch({ type: 'SET_BOARD', payload: data.board})
-		gameDispatch({ type: 'SET_WORD', payload: data.word})
-		gameDispatch({ type: 'SET_DEFINITION', payload: data.definition})
+		gameDispatch({ type: 'SET_BOARD', payload: data.board });
+		gameDispatch({ type: 'SET_WORD', payload: data.word });
+		gameDispatch({ type: 'SET_DEFINITION', payload: data.definition });
 		setIsLoading(false);
 	};
 
@@ -86,46 +84,46 @@ function App() {
 	};
 
 	const restartGame = () => {
-		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
+		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
 		fetchPractice();
 		resetGame();
 		modalDispatch({ type: 'CLOSE_MODAL' });
 	};
 
 	const showMenu = () => {
-		gameDispatch({ type: 'SET_GAME_MODE', payload: 'menu'})
+		gameDispatch({ type: 'SET_GAME_MODE', payload: 'menu' });
 		modalDispatch({ type: 'OPEN_MODAL', payload: 'menu' });
 		resetGame();
 	};
 
 	const resetGame = () => {
 		setKey((prevKey) => prevKey + 1);
-		gameDispatch({ type: 'RESET_ATTEMPTS' })
-		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
+		gameDispatch({ type: 'RESET_ATTEMPTS' });
+		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
 		setScore(0);
 		setDailyScore([]);
 	};
 
 	const reduceAttempts = () => {
-		gameDispatch({ type: 'REDUCE_ATTEMPTS' })
+		gameDispatch({ type: 'REDUCE_ATTEMPTS' });
 		if (gameState.remainingAttempts >= 1 && gameState.gameState !== GAME_STATES.WIN) {
 			setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }]);
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
-			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
+			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
 		}
 	};
 
 	const handleWinState = () => {
 		setKey((prevKey) => prevKey + 1);
-		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
+		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
 		setScore(0);
 	};
-	
+
 	const handleModalClose = () => {
 		if (gameState.gameMode === 'daily') {
 			if (gameState.gameState === GAME_STATES.GAMEOVER) {
-				gameDispatch({ type: 'SET_GAME_MODE', payload: 'menu'})
+				gameDispatch({ type: 'SET_GAME_MODE', payload: 'menu' });
 				modalDispatch({ type: 'OPEN_MODAL' });
 			} else if (gameState.gameState === GAME_STATES.WIN) {
 				handleWinState();
@@ -181,10 +179,7 @@ function App() {
 							<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(gameState.word)}</p>
 						</div>
 						{gameState.word && gameState.board && !isLoading && (
-							<Gameboard
-								key={key}
-								aria-label='gameboard'
-							/>
+							<Gameboard key={key} aria-label='gameboard' />
 						)}
 						<ScoreUI score={score}>
 							<button
@@ -209,7 +204,26 @@ function App() {
 									dailyScore={dailyScore}
 									word={capitaliseWord(gameState.word)}
 									definition={gameState.definition}
-								></ScoreContent>
+								>
+									{gameState.gameState === GAME_STATES.WIN && (
+										<>
+											<h2 className='text-2xl font-bold'>Winner!</h2>
+											<p className='text-sm font-medium my-2'>
+												{gameState.remainingAttempts >= 1
+													? 'You still have attempts left, try and beat your score?'
+													: 'Try a new word?'}
+											</p>
+											<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+										</>
+									)}
+									{gameState.gameState === GAME_STATES.GAMEOVER && (
+										<>
+											<h2 className='text-2xl font-bold'>Game Over</h2>
+											<p className='text-sm font-medium my-2'>Try a new word?</p>
+											<hr className='my-3 w-5/6 mx-auto border-t-2 border-primary ' />
+										</>
+									)}
+								</ScoreContent>
 							)}
 							{modalState.content === 'help' && <HowToContent />}
 						</>

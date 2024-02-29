@@ -7,7 +7,6 @@ function Modal({ children }) {
     const {modalState} = useContext(GlobalState)
 
     useEffect(() => {
-        console.log("Modal State", modalState.isModalOpen)
         if(modalState.isModalOpen) {
             dialogRef.current.showModal();
         }

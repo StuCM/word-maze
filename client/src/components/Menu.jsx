@@ -16,6 +16,8 @@ function Menu() {
 			const data = JSON.parse(window.localStorage.getItem('daily'));
 			if(data){
 				gameDispatch({type: 'SET_ATTEMPTS', payload: data.remainingAttempts})
+				gameDispatch({type: 'SET_DAILY_SCORE', payload: data.dailyScore})
+				gameDispatch({ type: 'SET_DEFINITION', payload: data.definition });
 			}
 			
 		}

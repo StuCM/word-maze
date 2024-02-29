@@ -34,6 +34,7 @@ function App() {
 	useEffect(() => {
 		fetchPractice();
 		fetchDaily();
+		// window.localStorage.clear();
 	}, []);
 
 	useEffect(() => {
@@ -94,6 +95,7 @@ function App() {
 	};
 
 	const fetchDaily = async () => {
+		//data is info about the players turns on daily
 		const data = window.localStorage.getItem('daily');
 		const dailyData = await fetchDailyBoard();
 		setDailyChallenge(dailyData);

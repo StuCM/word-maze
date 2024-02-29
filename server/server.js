@@ -47,7 +47,7 @@ app.get('/api/getDaily', async (req, res) => {
 			fs.writeFileSync('dailyBoard.json', JSON.stringify(cache.daily));
 		}
 
-		res.json(cache.daily);
+		res.json(cache.daily.board);
 	} catch (error) {
 		console.error('No gameboard available', error);
 	}
@@ -61,10 +61,11 @@ app.listen(PORT, host, async () => {
 	if (!cache.gameObject) {
 		cache.gameObject = await generateBoard(boardSize, wordSize);
 	}
-	if (!cache.daily) {
+	if (!cache.daily.board) {
 		try {
 			const data = fs.readFileSync('dailyBoard.json', 'utf8');
 			cache.daily = JSON.parse(data);
+			console.log(cache.daily)
 		} catch (err) {
 			console.error(`Error reading file from disk: ${err}`);
 			cache.daily.board = await generateBoard(boardSize, wordSize);

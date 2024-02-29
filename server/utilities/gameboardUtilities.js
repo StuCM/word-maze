@@ -1,27 +1,28 @@
-const letterScores = require("./letterScores");
-const axios = require('axios')
+const letterScores = require('./letterScores');
+const axios = require('axios');
 require('dotenv').config();
 
-const apiKey = process.env.API_KEY
+const apiKey = process.env.API_KEY;
 
 async function getRandomWord(wordLength) {
-	const url = new URL('http://api.wordnik.com/v4/words.json/randomWord')
+	const url = new URL('http://api.wordnik.com/v4/words.json/randomWord');
 	const params = {
 		hasDictionaryDef: true,
 		includePartOfSpeech: 'noun,adjective,verb',
-		excludePartOfSpeech: 'adverb,interjection,pronoun,preposition,abbreviation,affix,article,auxiliary-verb,conjunction,definite-article,family-name,given-name,idiom,imperative,noun-plural,noun-posessive,past-participle,phrasal-prefix,proper-noun,proper-noun-plural,proper-noun-posessive,suffix,verb-intransitive,verb-transitive',
+		excludePartOfSpeech:
+			'adverb,interjection,pronoun,preposition,abbreviation,affix,article,auxiliary-verb,conjunction,definite-article,family-name,given-name,idiom,imperative,noun-plural,noun-posessive,past-participle,phrasal-prefix,proper-noun,proper-noun-plural,proper-noun-posessive,suffix,verb-intransitive,verb-transitive',
 		maxCorpusCount: -1,
 		minDictionaryCount: 5,
 		maxDictionaryCount: -1,
 		minLength: wordLength,
 		maxLength: wordLength,
 		limit: 1,
-		api_key: apiKey
-	}
+		api_key: apiKey,
+	};
 	url.search = new URLSearchParams(params);
-	
+
 	try {
-		const response = await axios.get(url.toString())
+		const response = await axios.get(url.toString());
 		return response.data;
 	} catch (error) {
 		console.error(error);
@@ -31,46 +32,61 @@ async function getRandomWord(wordLength) {
 
 async function getDefinition(word) {
 	word = word.toLowerCase();
-	const url = new URL(`https://api.wordnik.com/v4/word.json/${word}/definitions`)
+	const url = new URL(`https://api.wordnik.com/v4/word.json/${word}/definitions`);
 	const params = {
 		limit: 200,
 		includeRelated: false,
 		sourceDictionaries: 'wordnet',
 		useCanonical: true,
 		includeTags: false,
-		api_key: apiKey
-	}
+		api_key: apiKey,
+	};
 	url.search = new URLSearchParams(params);
 	try {
-		const response = await axios.get(url.toString())
-		const strWithoutHtml = response.data[0].text.replace(/<\/?[^>]+(>|$)/g, "")
-		return strWithoutHtml
+		const response = await axios.get(url.toString());
+		const strWithoutHtml = response.data[0].text.replace(/<\/?[^>]+(>|$)/g, '');
+		return strWithoutHtml;
 	} catch (error) {
-		console.error('definition not found')
+		console.error('definition not found');
 	}
-	
 }
 
-function addScores(word){
+function addScores(word) {
 	const letters = word.split('');
 	return letters.map((letter) => {
 		const score = letterScores[letter.toLowerCase()];
-		return {text:letter, score}
-	})
+		return { text: letter, score };
+	});
 }
 
 function randomIndex(maxNumber) {
-    return Math.floor(Math.random() * maxNumber);
+	return Math.floor(Math.random() * maxNumber);
 }
 
 async function generateBoard(size, wordLength) {
 	const word = await getRandomWord(wordLength);
 	if (!word.word) return null;
 	let board = createEmptyBoard(size);
-	const letterArray = addScores(word.word)
+	const letterArray = addScores(word.word);
 	board = fillBoard(letterArray, board);
+	console.log(board);
+	board = scoreMultiplier(board);
+	console.log(board);
 	const definition = await getDefinition(word.word);
 	return { word: word.word, board, definition };
+}
+
+function scoreMultiplier(board) {
+	const boardTotal = board.flat().reduce((acc, letter) => {
+		return (acc += letter.score);
+	}, 0);
+	const multiplier = (100 / boardTotal).toFixed(2);
+	console.log("multi",multiplier)
+	return board.map((row) => {
+		return row.map((letter) => {
+			return { ...letter, score: Math.round(letter.score * multiplier) };
+		});
+	});
 }
 
 function createEmptyBoard(size) {
@@ -85,32 +101,32 @@ function createEmptyBoard(size) {
 }
 
 function createWordPath(letterArray, board) {
-    let nextDirection = Math.random() < 0.5 ? 'vertical' : 'horizontal';
-    let row = randomIndex(board.length);
-    let column = randomIndex(board.length);
-    board[row][column] = letterArray[0];
-    letterArray.slice(1).forEach((letter) => {
-        if (nextDirection === 'vertical') {
-            do {
-                row = randomIndex(board.length);
-            } while (board[row][column] !== '' && board[row][column] !== letter);
-            board[row][column] = letter;
-            nextDirection = 'horizontal';
-        } else {
-            do {
-                column = randomIndex(board.length);
-            } while (board[row][column] !== '' && board[row][column] !== letter);
-            board[row][column] = letter;
-            nextDirection = 'vertical';
-        }
-    });
-    return board;
+	let nextDirection = Math.random() < 0.5 ? 'vertical' : 'horizontal';
+	let row = randomIndex(board.length);
+	let column = randomIndex(board.length);
+	board[row][column] = letterArray[0];
+	letterArray.slice(1).forEach((letter) => {
+		if (nextDirection === 'vertical') {
+			do {
+				row = randomIndex(board.length);
+			} while (board[row][column] !== '' && board[row][column] !== letter);
+			board[row][column] = letter;
+			nextDirection = 'horizontal';
+		} else {
+			do {
+				column = randomIndex(board.length);
+			} while (board[row][column] !== '' && board[row][column] !== letter);
+			board[row][column] = letter;
+			nextDirection = 'vertical';
+		}
+	});
+	return board;
 }
 
 function fillBoard(letterArray, board) {
 	for (let i = 0; i < 3; i++) {
-        board = createWordPath(letterArray, board);
-    }
+		board = createWordPath(letterArray, board);
+	}
 	board.forEach((row) => {
 		let letterCount = {
 			0: 0,
@@ -118,17 +134,17 @@ function fillBoard(letterArray, board) {
 			2: 0,
 			3: 0,
 			4: 0,
-			5: 0
-		}
+			5: 0,
+		};
 		row.forEach((_, index) => {
 			if (row[index] !== '') return;
 			let randomIndex = Math.floor(Math.random() * letterArray.length);
 			//controls amount of each letter per line
-			while(letterCount[randomIndex] >= 2){
+			while (letterCount[randomIndex] >= 2) {
 				randomIndex = Math.floor(Math.random() * letterArray.length);
 			}
 			row[index] = letterArray[randomIndex];
-			letterCount[randomIndex] += 1
+			letterCount[randomIndex] += 1;
 		});
 	});
 	return board;

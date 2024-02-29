@@ -15,14 +15,8 @@ function Gameboard() {
 	const [clicks, setClicks] = useState(gameState.word.length)
 	const [userWord, setUserWord] = useState([]);
 	const gameboard = useRef();
-	const [scoreMultiplier, setScoreMultiplier] = useState(1);
 
 	//hooks
-	useEffect(() => {
-		const multiplier = calculateScoreMultiplier(gameState.board);
-		setScoreMultiplier(multiplier);
-	}, []);
-
 	useEffect(() => {
 		const newLine = createLine();
 		if (newLine) {
@@ -118,7 +112,6 @@ function Gameboard() {
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
 										clicks={clicks}
-										multiplier={scoreMultiplier}
 										key={`${rowIndex}-${columnIndex}`}
 									/>
 								);

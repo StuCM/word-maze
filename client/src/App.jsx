@@ -103,6 +103,7 @@ function App() {
 		gameDispatch({ type: 'RESET_ATTEMPTS' })
 		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
 		setScore(0);
+		setDailyScore([]);
 	};
 
 	const reduceAttempts = () => {

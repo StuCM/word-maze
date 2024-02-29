@@ -7,6 +7,7 @@ export const initialState = {
     word: '',
     definition: '',
     remainingAttempts: 3,
+    dailyScore: []
 }
 
 export function gameReducer(state, action) {
@@ -25,6 +26,10 @@ export function gameReducer(state, action) {
             return { ...state, remainingAttempts: state.remainingAttempts > 0 ? state.remainingAttempts - 1 : 0 };
         case 'RESET_ATTEMPTS':
             return { ...state, remainingAttempts: 3 };
+        case 'SET_ATTEMPTS':
+            return { ...state, remainingAttempts: action.payload };
+        case 'SET_DAILY_SCORE':
+            return { ...state, dailyScore: action.payload };
         default:
             throw new Error();
     }

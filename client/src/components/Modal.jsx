@@ -14,7 +14,7 @@ function Modal({ children }) {
     }, [modalState.isModalOpen])
 
     return (
-        <dialog data-testid="dialog" className="relative w-11/12 rounded-lg bg-transparent my-auto max-w-md max-h-100 focus-visible:border-none focus:border-none" ref={dialogRef}>
+        <dialog data-testid="dialog" className="relative w-11/12 rounded-lg bg-transparent my-auto max-w-md max-h-100 focus:outline-none focus:border-none" ref={dialogRef}>
             {children}
         </dialog>
     )

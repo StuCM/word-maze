@@ -1,11 +1,11 @@
 import { useContext, useEffect, useState } from "react";
 import { GlobalState } from "../App";
 
-function ScoreContent({ dailyScore, children }) {
+function ScoreContent({ children }) {
 
 	const {gameState} = useContext(GlobalState)
 
-	const emptyRows = 3 - dailyScore.length;
+	const emptyRows = 3 - gameState.dailyScore.length;
     const word = gameState.word.charAt(0).toUpperCase() + gameState.word.slice(1).toLowerCase();
 
 	const [topScore, setTopScore] = useState(0);
@@ -13,12 +13,12 @@ function ScoreContent({ dailyScore, children }) {
 	
 
 	useEffect(() => {
-		if(dailyScore.length > 0){
-			setTopScore(Math.max(...dailyScore.map(obj => obj.score)));
+		if(gameState.dailyScore.length > 0){
+			setTopScore(Math.max(...gameState.dailyScore.map(obj => obj.score)));
 		}
 		else { setTopScore(0)}
 		
-	},[dailyScore])
+	},[gameState.dailyScore])
 
 	return (
 		<section className='bg-textPrim border-4 rounded-2xl border-primary'>
@@ -35,7 +35,7 @@ function ScoreContent({ dailyScore, children }) {
 							<th className='py-1.5 px-2 text-sm text-center'>Attempt</th>
 							<th className='py-1.5 px-2.5 text-sm'>Score</th>
 						</tr>
-						{dailyScore.map((item, index) => (
+						{gameState.dailyScore.map((item, index) => (
 							<tr
 								className={`text-textSec font-bold ${index % 2 !== 0 ? 'bg-letterBg' : 'bg-seconday'}`}
 								key={index}
@@ -49,8 +49,8 @@ function ScoreContent({ dailyScore, children }) {
 							.fill()
 							.map((_, index) => (
 								<tr
-									className={`text-textSec font-bold ${(index + dailyScore.length) % 2 !== 0 ? 'bg-letterBg' : 'bg-seconday'}`}
-									key={index + dailyScore.length}
+									className={`text-textSec font-bold ${(index + gameState.dailyScore.length) % 2 !== 0 ? 'bg-letterBg' : 'bg-seconday'}`}
+									key={index + gameState.dailyScore.length}
 								>
 									<td className='text-center'>&nbsp;</td>
 									<td className='text-center align-middle'>&nbsp;</td>

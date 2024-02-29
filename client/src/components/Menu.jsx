@@ -12,6 +12,13 @@ function Menu() {
 
 	const handleClick = (mode) => {
 		gameDispatch({type:'SET_GAME_MODE', payload: mode})
+		if(mode === 'daily'){
+			const data = JSON.parse(window.localStorage.getItem('daily'));
+			if(data){
+				gameDispatch({type: 'SET_ATTEMPTS', payload: data.remainingAttempts})
+			}
+			
+		}
 	};
 
 	return (

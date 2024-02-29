@@ -23,12 +23,13 @@ export const GlobalState = createContext();
 function App() {
 	const [key, setKey] = useState(0);
 	const [score, setScore] = useState(0);
-	const [dailyScore, setDailyScore] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [dailyChallenge, setDailyChallenge] = useState();
 
 	const [modalState, modalDispatch] = useReducer(modalReducer, modalInitialState);
 	const [gameState, gameDispatch] = useReducer(gameReducer, gameInitialState);
+
+	const dailyCheck = {};
 
 	useEffect(() => {
 		fetchPractice();
@@ -49,14 +50,14 @@ function App() {
 	useEffect(() => {
 		switch (gameState.gameState) {
 			case GAME_STATES.WIN:
-				setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: score }]);
+				gameDispatch({type:'SET_DAILY_SCORE', payload:([...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: score }])});
 				pushScore(gameState.word, score);
 				modalDispatch({ type: 'OPEN_MODAL', payload: 'score' });
 				reduceAttempts();
 				break;
 			case GAME_STATES.INCORRECT:
 				setTimeout(() => {
-					setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }]);
+					gameDispatch({type:'SET_DAILY_SCORE', payload:([...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }])});
 					reduceAttempts();
 					setScore(0);
 				}, 1000);
@@ -64,11 +65,25 @@ function App() {
 	}, [gameState.gameState]);
 
 	useEffect(() => {
+		if(gameState.gameMode === 'daily') {
+			dailyStorage();
+		}
 		if (gameState.remainingAttempts === 0) {
 			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.GAMEOVER });
 			modalDispatch({ type: 'OPEN_MODAL', payload: 'score' });
 		}
 	}, [gameState.remainingAttempts]);
+
+	const dailyStorage = () => {
+		console.log("hello")
+		if(gameState.gameMode === 'daily') {
+			window.localStorage.setItem('daily', JSON.stringify({
+				...dailyCheck, 
+				remainingAttempts: gameState.remainingAttempts,
+				dailyScore: gameState.dailyScore
+			}))
+		}
+	}
 
 	const fetchPractice = async () => {
 		const data = await fetchBoard();
@@ -79,6 +94,7 @@ function App() {
 	};
 
 	const fetchDaily = async () => {
+		const data = window.localStorage.getItem('daily');
 		const dailyData = await fetchDailyBoard();
 		setDailyChallenge(dailyData);
 	};
@@ -101,13 +117,13 @@ function App() {
 		gameDispatch({ type: 'RESET_ATTEMPTS' });
 		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
 		setScore(0);
-		setDailyScore([]);
+		gameDispatch({type:'SET_DAILY_SCORE', payload:[]});
 	};
 
 	const reduceAttempts = () => {
 		gameDispatch({ type: 'REDUCE_ATTEMPTS' });
 		if (gameState.remainingAttempts >= 1 && gameState.gameState !== GAME_STATES.WIN) {
-			setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }]);
+			gameDispatch({type:'SET_DAILY_SCORE', payload:([...gameState.dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }])});
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
 			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START });
@@ -201,7 +217,6 @@ function App() {
 							{modalState.content === 'highScore' && <HighScores />}
 							{modalState.content === 'score' && (
 								<ScoreContent
-									dailyScore={dailyScore}
 									word={capitaliseWord(gameState.word)}
 									definition={gameState.definition}
 								>

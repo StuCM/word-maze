@@ -2,24 +2,27 @@ import { useContext, useEffect } from 'react';
 import { GlobalState } from '../App';
 
 function Menu() {
-	const {gameState, gameDispatch} = useContext(GlobalState)
+	const {gameState, gameDispatch, dispatch} = useContext(GlobalState)
 	const buttons = [
 		{ text: 'Daily Word', mode: 'daily' },
 		{ text: 'Practice', mode: 'practice' },
-		{ text: 'How to Play', mode: '' },
-		{ text: 'High Scores', mode: '' },
+		{ text: 'How to Play', mode: 'help' },
+		{ text: 'High Scores', mode: 'highScore' },
 	];	
 
 	const handleClick = (mode) => {
-		gameDispatch({type:'SET_GAME_MODE', payload: mode})
-		if(mode === 'daily'){
-			const data = JSON.parse(window.localStorage.getItem('daily'));
-			if(data){
-				gameDispatch({type: 'SET_ATTEMPTS', payload: data.remainingAttempts})
-				gameDispatch({type: 'SET_DAILY_SCORE', payload: data.dailyScore})
-				gameDispatch({ type: 'SET_DEFINITION', payload: data.definition });
+		if (mode === 'help' || mode === 'highScore') {
+			dispatch({ type: 'OPEN_MODAL', payload: mode });
+		} else {
+			gameDispatch({ type: 'SET_GAME_MODE', payload: mode });
+			if (mode === 'daily') {
+				const data = JSON.parse(window.localStorage.getItem('daily'));
+				if (data) {
+					gameDispatch({ type: 'SET_ATTEMPTS', payload: data.remainingAttempts });
+					gameDispatch({ type: 'SET_DAILY_SCORE', payload: data.dailyScore });
+					gameDispatch({ type: 'SET_DEFINITION', payload: data.definition });
+				}
 			}
-			
 		}
 	};
 

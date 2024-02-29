@@ -11,7 +11,7 @@ function ModalButtons({ handleModalClose, restartGame, showMenu }) {
 		<>
 			{gameState.gameMode === 'daily' ? (
 				<>
-					<button
+					{gameState.gameState !== GAME_STATES.GAMEOVER && <button
 						className='px-3.5 bg-seconday m-4 rounded-full shadow-lg'
 						onClick={() => {
 							handleModalClose();
@@ -22,7 +22,7 @@ function ModalButtons({ handleModalClose, restartGame, showMenu }) {
 						) : (
 							<FontAwesomeIcon icon={faX} className='text-md text-textPrim' />
 						)}
-					</button>
+					</button>}
 					{(gameState.gameState === GAME_STATES.WIN || gameState.gameState === GAME_STATES.GAMEOVER) && (
 						<button className='px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={showMenu}>
 							<p className='text-textPrim font-semibold min-w-20'>Menu</p>
@@ -43,7 +43,7 @@ function ModalButtons({ handleModalClose, restartGame, showMenu }) {
 							<FontAwesomeIcon icon={faX} className='text-md text-textPrim' />
 						)}
 					</button>
-					{gameState.gameState === GAME_STATES.WIN && (
+					{gameState === GAME_STATES.WIN && (
 						<button className='px-3.5 bg-seconday m-4 rounded-full shadow-lg' onClick={restartGame}>
 							<p className='text-textPrim font-semibold min-w-20'>New Word</p>
 						</button>

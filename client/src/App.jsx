@@ -34,7 +34,7 @@ function App() {
 	useEffect(() => {
 		fetchPractice();
 		fetchDaily();
-		// window.localStorage.clear();
+		//window.localStorage.clear();
 	}, []);
 
 	useEffect(() => {

@@ -12,8 +12,7 @@ function Letter({
 	prevSelected,
 	row,
 	column,
-	clicks,
-	multiplier
+	clicks
 }) {
 	//state
 	const { setScore } = useContext(GlobalState);
@@ -80,7 +79,7 @@ function Letter({
 		) {
 			setTextColor('#CACACA');
 			setIsDisabled(true);
-			setScore((prevScore) => prevScore + Math.round(letterScore * multiplier));
+			setScore((prevScore) => prevScore + letterScore);
 		}
 	};
 
@@ -152,7 +151,7 @@ function Letter({
 			data-testid="letter"
 		>
 			{text}
-			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{Math.round(letterScore*multiplier)}</span>
+			<span className='absolute text-xs right-0 bottom-0 mr-1 mb-1'>{letterScore}</span>
 		</div>
 	);
 }

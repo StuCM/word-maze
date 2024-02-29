@@ -34,7 +34,7 @@ function App() {
 	useEffect(() => {
 		fetchPractice();
 		fetchDaily();
-		//window.localStorage.clear();
+		checkDates();
 	}, []);
 
 	useEffect(() => {
@@ -76,13 +76,23 @@ function App() {
 	}, [gameState.remainingAttempts]);
 
 	const dailyStorage = () => {
-		console.log("hello")
 		if(gameState.gameMode === 'daily') {
 			window.localStorage.setItem('daily', JSON.stringify({
 				...dailyCheck, 
 				remainingAttempts: gameState.remainingAttempts,
-				dailyScore: gameState.dailyScore
+				dailyScore: gameState.dailyScore,
+				date: new Date().toDateString()
 			}))
+		}
+	}
+
+	//checks if the user has played the daily game today
+	const checkDates = () => {
+		const today = new Date().toDateString();
+		const storedDate = JSON.parse(window.localStorage.getItem('daily'))?.date;
+
+		if(storedDate !== today){
+			window.localStorage.removeItem('daily')
 		}
 	}
 

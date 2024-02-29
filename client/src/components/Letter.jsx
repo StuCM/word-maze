@@ -13,8 +13,6 @@ function Letter({
 	row,
 	column,
 	clicks,
-	setGameState,
-	gameState,
 	multiplier
 }) {
 	//state
@@ -35,6 +33,8 @@ function Letter({
 		height: null,
 	});
 
+	const {gameState, gameDispatch} = useContext(GlobalState);
+
 	//hooks
 	const letterRef = useRef(null);
 
@@ -53,17 +53,17 @@ function Letter({
 	}, [selectedLetter]);
 
 	useEffect(() => {
-		if (letterColor !== primaryColor && gameState === GAME_STATES.WIN) {
+		if (letterColor !== primaryColor && gameState.gameState === GAME_STATES.WIN) {
 			setLetterColor(correctColor);
-		} else if (letterColor !== primaryColor && gameState === GAME_STATES.INCORRECT) {
+		} else if (letterColor !== primaryColor && gameState.gameState === GAME_STATES.INCORRECT) {
 			setLetterColor(incorrectColor);
-		} else if (gameState === GAME_STATES.GAMEOVER) {
+		} else if (gameState.gameState === GAME_STATES.GAMEOVER) {
 			if (letterColor !== primaryColor && letterColor !== correctColor) {
 				setLetterColor(incorrectColor);
 			}
 			setIsDisabled(true);
 		}
-	}, [gameState]);
+	}, [gameState.gameState]);
 
 	//variables
 	text = text.toUpperCase();
@@ -86,7 +86,7 @@ function Letter({
 
 	const handleClick = () => {
 		if (!canSelect || isDisabled || clicks === 0) return;
-		if (gameState === GAME_STATES.START) setGameState(GAME_STATES.RUNNING);
+		if (gameState.gameState === GAME_STATES.START) gameDispatch({type: 'SET_GAME_STATE', payload: GAME_STATES.RUNNING});
 		changeColor();
 		handleSelectLetter(row, column, position.x, position.y, position.height, text);
 		setIsDisabled(true);
@@ -139,9 +139,9 @@ function Letter({
 	const shouldHighlight =
 		!isDisabled &&
 		canSelect &&
-		gameState !== GAME_STATES.GAMEOVER &&
-		gameState !== GAME_STATES.START &&
-		gameState !== GAME_STATES.INCORRECT;
+		gameState.gameState !== GAME_STATES.GAMEOVER &&
+		gameState.gameState !== GAME_STATES.START &&
+		gameState.gameState !== GAME_STATES.INCORRECT;
 
 	return (
 		<div

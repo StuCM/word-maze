@@ -1,17 +1,17 @@
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import { GlobalState } from '../App';
 
 function Menu() {
-	const { setGameMode } = useContext(GlobalState);
+	const {gameState, gameDispatch} = useContext(GlobalState)
 	const buttons = [
 		{ text: 'Daily Word', mode: 'daily' },
 		{ text: 'Practice', mode: 'practice' },
 		{ text: 'How to Play', mode: '' },
 		{ text: 'High Scores', mode: '' },
-	];
+	];	
 
 	const handleClick = (mode) => {
-		setGameMode(mode);
+		gameDispatch({type:'SET_GAME_MODE', payload: mode})
 	};
 
 	return (

@@ -2,22 +2,24 @@ import { GAME_STATES } from '../constants/gameState';
 import { calculateScoreMultiplier } from '../services/scoreCalculator';
 import Letter from './Letter';
 import Line from './Line';
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useContext } from 'react';
+import { GlobalState } from '../App';
 
-function Gameboard({ board, word, gameState, setGameState }) {
+function Gameboard() {
+	const {gameState, gameDispatch} = useContext(GlobalState);
 	//state
 	const [currentHue, setCurrentHue] = useState(null);
 	const [selectedLetter, setSelectedLetter] = useState({ row: null, column: null, x: null, y: null, height: null, letter:null });
 	const [prevSelected, setPrevSelected] = useState({ row: null, column: null, x: null, y: null, height: null });
 	const [lines, setLines] = useState([]);
-	const [clicks, setClicks] = useState(word.length)
+	const [clicks, setClicks] = useState(gameState.word.length)
 	const [userWord, setUserWord] = useState([]);
 	const gameboard = useRef();
 	const [scoreMultiplier, setScoreMultiplier] = useState(1);
 
 	//hooks
 	useEffect(() => {
-		const multiplier = calculateScoreMultiplier(board);
+		const multiplier = calculateScoreMultiplier(gameState.board);
 		setScoreMultiplier(multiplier);
 	}, []);
 
@@ -37,12 +39,12 @@ function Gameboard({ board, word, gameState, setGameState }) {
 	useEffect(()=>{
 		if(clicks === 0){	
 			const selWord = userWord.join('').toLocaleLowerCase();
-			if(selWord === word.toLowerCase()) {
-				setGameState(GAME_STATES.WIN)
+			if(selWord === gameState.word.toLowerCase()) {
+				gameDispatch({type: 'SET_GAME_STATE', payload: GAME_STATES.WIN})
 				return;
 			}
 			else { 
-				setGameState(GAME_STATES.INCORRECT)
+				gameDispatch({type: 'SET_GAME_STATE', payload: GAME_STATES.INCORRECT})
 			}
 		}
 	},[userWord])
@@ -94,13 +96,13 @@ function Gameboard({ board, word, gameState, setGameState }) {
 	};
 
 	const gridStyle = {
-		gridTemplateColumns: `repeat(${board[0].length}, 1fr)`,
-		gridTemplateRows: `repeat(${board[0].length}, 1fr)`,
+		gridTemplateColumns: `repeat(${gameState.board[0].length}, 1fr)`,
+		gridTemplateRows: `repeat(${gameState.board[0].length}, 1fr)`,
 	};
 	return (
 		<>
 			<section ref={gameboard} className='board-container mt-8' style={gridStyle} aria-label='gameboard'>
-				{board.map((row, rowIndex) => {
+				{gameState.board.map((row, rowIndex) => {
 					return (
 						<React.Fragment key={rowIndex}>
 							{row.map((letter, columnIndex) => {
@@ -116,8 +118,6 @@ function Gameboard({ board, word, gameState, setGameState }) {
 										currentHue={currentHue}
 										setCurrentHue={setCurrentHue}
 										clicks={clicks}
-										setGameState={setGameState}
-										gameState={gameState}
 										multiplier={scoreMultiplier}
 										key={`${rowIndex}-${columnIndex}`}
 									/>

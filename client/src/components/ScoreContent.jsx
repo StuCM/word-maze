@@ -1,10 +1,16 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { GlobalState } from "../App";
 
-function ScoreContent({ dailyScore, word, definition, children }) {
+function ScoreContent({ dailyScore, children }) {
+
+	const {gameState} = useContext(GlobalState)
+
 	const emptyRows = 3 - dailyScore.length;
-    word = word.charAt(0) + word.slice(1).toLowerCase();
+    const word = gameState.word.charAt(0).toUpperCase() + gameState.word.slice(1).toLowerCase();
 
 	const [topScore, setTopScore] = useState(0);
+
+	
 
 	useEffect(() => {
 		if(dailyScore.length > 0){
@@ -56,7 +62,7 @@ function ScoreContent({ dailyScore, word, definition, children }) {
 			<div className='p-3 font-bold text-lg mb-2 text-textSec'>
 				{children}
 				<p className='text-2xl mb-2'>{word}</p>
-				<p className='font-semibold text-sm italic'>{definition}</p>
+				<p className='font-semibold text-sm italic'>{gameState.definition}</p>
 			</div>
 		</section>
 	);

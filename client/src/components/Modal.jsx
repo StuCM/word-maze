@@ -4,7 +4,7 @@ import { GlobalState } from "../App";
 
 function Modal({ children }) {
     const dialogRef = useRef();
-    const { modalState } = useContext(GlobalState)
+    const {modalState} = useContext(GlobalState)
 
     useEffect(() => {
         console.log("Modal State", modalState.isModalOpen)

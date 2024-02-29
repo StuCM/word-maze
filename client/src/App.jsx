@@ -12,7 +12,8 @@ import loadingGIF from './assets/loading.gif';
 import HowToContent from './components/HowToContent';
 import HighScores from './components/HighScores';
 import { fetchBoard, fetchDailyBoard } from './services/fetchRequests';
-import { initialState, modalReducer } from './reducer/modalReducer';
+import { initialState as modalInitialState, modalReducer } from './reducer/modalReducer';
+import { initialState as gameInitialState, gameReducer } from './reducer/gameReducer';
 import ModalNav from './components/ModalNav';
 import ModalButtons from './components/ModalButtons';
 import Menu from './components/Menu';
@@ -20,19 +21,14 @@ import Menu from './components/Menu';
 export const GlobalState = createContext();
 
 function App() {
-	const [gameState, setGameState] = useState(GAME_STATES.START);
-	const [gameMode, setGameMode] = useState('menu');
-	const [board, setBoard] = useState();
-	const [word, setWord] = useState();
-	const [definition, setDefinition] = useState();
 	const [key, setKey] = useState(0);
-	const [remainingAttempts, setRemainingAttempts] = useState(3);
 	const [score, setScore] = useState(0);
 	const [dailyScore, setDailyScore] = useState([]);
 	const [isLoading, setIsLoading] = useState(true);
 	const [dailyChallenge, setDailyChallenge] = useState();
 
-	const [modalState, dispatch] = useReducer(modalReducer, initialState);
+	const [modalState, modalDispatch] = useReducer(modalReducer, modalInitialState);
+	const [gameState, gameDispatch] = useReducer(gameReducer, gameInitialState);
 
 	useEffect(() => {
 		fetchPractice();
@@ -40,45 +36,47 @@ function App() {
 	}, []);
 
 	useEffect(() => {
-		if (gameMode === 'daily') {
-			setBoard(dailyChallenge.board);
-			setWord(dailyChallenge.word);
-			dispatch({ type: 'CLOSE_MODAL' });
-		} else if (gameMode === 'practice') {
+		console.log("this", gameState.gameMode)
+		if (gameState.gameMode === 'daily') {
+			console.log("running")
+			gameDispatch({ type: 'SET_BOARD', payload: dailyChallenge.board})
+			gameDispatch({ type: 'SET_WORD', payload: dailyChallenge.word });
+			modalDispatch({ type: 'CLOSE_MODAL' });
+		} else if (gameState.gameMode === 'practice') {
 			fetchPractice();
-			dispatch({ type: 'CLOSE_MODAL' });
+			modalDispatch({ type: 'CLOSE_MODAL' });
 		}
-	}, [gameMode]);
+	}, [gameState.gameMode]);
 
 	useEffect(() => {
-		switch (gameState) {
+		switch (gameState.gameState) {
 			case GAME_STATES.WIN:
-				setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: score }]);
-				pushScore(word, score);
-				dispatch({ type: 'OPEN_MODAL', payload: 'score' });
+				setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: score }]);
+				pushScore(gameState.word, score);
+				modalDispatch({ type: 'OPEN_MODAL', payload: 'score' });
 				reduceAttempts();
 				break;
 			case GAME_STATES.INCORRECT:
 				setTimeout(() => {
-					setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: 0 }]);
+					setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }]);
 					reduceAttempts();
 					setScore(0);
 				}, 1000);
 		}
-	}, [gameState]);
+	}, [gameState.gameState]);
 
 	useEffect(() => {
-		if (remainingAttempts === 0) {
-			setGameState(GAME_STATES.GAMEOVER);
-			dispatch({ type: 'OPEN_MODAL', payload: 'score' });
+		if (gameState.remainingAttempts === 0) {
+			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.GAMEOVER})
+			modalDispatch({ type: 'OPEN_MODAL', payload: 'score' });
 		}
-	}, [remainingAttempts]);
+	}, [gameState.remainingAttempts]);
 
 	const fetchPractice = async () => {
 		const data = await fetchBoard();
-		setBoard(data.board);
-		setWord(data.word);
-		setDefinition(data.definition);
+		gameDispatch({ type: 'SET_BOARD', payload: data.board})
+		gameDispatch({ type: 'SET_WORD', payload: data.word})
+		gameDispatch({ type: 'SET_DEFINITION', payload: data.definition})
 		setIsLoading(false);
 	};
 
@@ -88,57 +86,57 @@ function App() {
 	};
 
 	const restartGame = () => {
-		setGameState(GAME_STATES.START);
+		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
 		fetchPractice();
 		resetGame();
-		dispatch({ type: 'CLOSE_MODAL' });
+		modalDispatch({ type: 'CLOSE_MODAL' });
 	};
 
 	const showMenu = () => {
-		setGameMode('menu');
-		dispatch({ type: 'OPEN_MODAL', payload: 'menu' });
+		gameDispatch({ type: 'SET_GAME_MODE', payload: 'menu'})
+		modalDispatch({ type: 'OPEN_MODAL', payload: 'menu' });
 		resetGame();
 	};
 
 	const resetGame = () => {
 		setKey((prevKey) => prevKey + 1);
-		setRemainingAttempts(3);
-		setGameState(GAME_STATES.START);
+		gameDispatch({ type: 'RESET_ATTEMPTS' })
+		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
 		setScore(0);
 	};
 
 	const reduceAttempts = () => {
-		remainingAttempts > 0 ? setRemainingAttempts(remainingAttempts - 1) : 0;
-		if (remainingAttempts >= 1 && gameState !== GAME_STATES.WIN) {
-			setDailyScore([...dailyScore, { attempt: 3 - remainingAttempts + 1, score: 0 }]);
+		gameDispatch({ type: 'REDUCE_ATTEMPTS' })
+		if (gameState.remainingAttempts >= 1 && gameState.gameState !== GAME_STATES.WIN) {
+			setDailyScore([...dailyScore, { attempt: 3 - gameState.remainingAttempts + 1, score: 0 }]);
 			setKey((prevKey) => prevKey + 1);
 			setScore(0);
-			setGameState(GAME_STATES.START);
+			gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
 		}
 	};
 
 	const handleWinState = () => {
 		setKey((prevKey) => prevKey + 1);
-		setGameState(GAME_STATES.START);
+		gameDispatch({ type: 'SET_GAME_STATE', payload: GAME_STATES.START})
 		setScore(0);
 	};
 	
 	const handleModalClose = () => {
-		if (gameMode === 'daily') {
-			if (gameState === GAME_STATES.GAMEOVER) {
-				setGameMode('menu');
-				dispatch({ type: 'OPEN_MODAL' });
-			} else if (gameState === GAME_STATES.WIN) {
+		if (gameState.gameMode === 'daily') {
+			if (gameState.gameState === GAME_STATES.GAMEOVER) {
+				gameDispatch({ type: 'SET_GAME_MODE', payload: 'menu'})
+				modalDispatch({ type: 'OPEN_MODAL' });
+			} else if (gameState.gameState === GAME_STATES.WIN) {
 				handleWinState();
 			}
 		} else {
-			if (gameState === GAME_STATES.GAMEOVER) {
+			if (gameState.gameState === GAME_STATES.GAMEOVER) {
 				restartGame();
-			} else if (gameState === GAME_STATES.WIN) {
+			} else if (gameState.gameState === GAME_STATES.WIN) {
 				handleWinState();
 			}
 		}
-		dispatch({ type: 'CLOSE_MODAL' });
+		modalDispatch({ type: 'CLOSE_MODAL' });
 	};
 
 	const capitaliseWord = (word) => {
@@ -164,10 +162,10 @@ function App() {
 	};
 
 	return (
-		<GlobalState.Provider value={{ score, setScore, modalState, dispatch, setGameMode, gameMode, gameState }}>
+		<GlobalState.Provider value={{ score, setScore, dispatch: modalDispatch, modalState, gameState, gameDispatch }}>
 			<main className='flex flex-col h-full'>
 				<Header />
-				{gameMode !== 'menu' && (
+				{gameState.gameMode !== 'menu' && (
 					<>
 						{isLoading && (
 							<div className='flex items-center justify-center w-full loading'>
@@ -179,23 +177,19 @@ function App() {
 						)}
 						<div className='mt-5'>
 							<p className='text-lg'>Todays Word:</p>
-							<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(word)}</p>
+							<p className='text-3xl mt-1 font-bold tracking-wider'>{capitaliseWord(gameState.word)}</p>
 						</div>
-						{word && board && !isLoading && (
+						{gameState.word && gameState.board && !isLoading && (
 							<Gameboard
 								key={key}
-								board={board}
-								word={word}
-								gameState={gameState}
-								setGameState={setGameState}
 								aria-label='gameboard'
 							/>
 						)}
-						<ScoreUI attempts={remainingAttempts} score={score}>
+						<ScoreUI score={score}>
 							<button
 								className='bg-seconday rounded-full p-2.5 flex justify-center items-center mt-5 shadow-lg disabled:opacity-60'
 								onClick={reduceAttempts}
-								disabled={gameState === GAME_STATES.START}
+								disabled={gameState.gameState === GAME_STATES.START}
 								data-testid='resetButton'
 							>
 								<FontAwesomeIcon icon={faRotateLeft} className='text-2xl' />
@@ -204,7 +198,7 @@ function App() {
 					</>
 				)}
 				<Modal>
-					{board && word && (
+					{gameState.board && gameState.word && (
 						<>
 							{modalState.content === 'menu' && <Menu />}
 							{modalState.content !== 'help' && modalState.content !== 'menu' && <ModalNav />}
@@ -212,8 +206,8 @@ function App() {
 							{modalState.content === 'score' && (
 								<ScoreContent
 									dailyScore={dailyScore}
-									word={capitaliseWord(word)}
-									definition={definition}
+									word={capitaliseWord(gameState.word)}
+									definition={gameState.definition}
 								></ScoreContent>
 							)}
 							{modalState.content === 'help' && <HowToContent />}

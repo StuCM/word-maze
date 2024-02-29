@@ -2,7 +2,6 @@ const express = require('express');
 const cors = require('cors');
 const generateBoard = require('./utilities/gameboardUtilities');
 const app = express();
-const cron = require('node-cron');
 const fs = require('fs');
 
 app.use(cors());
@@ -12,7 +11,7 @@ const PORT = process.env.PORT || 3000;
 const host = '0.0.0.0';
 
 const cache = {
-	daily: null,
+	daily: { board: null, time: null },
 	gameObject: null,
 };
 
@@ -38,19 +37,24 @@ app.get('/api/getGameboard', async (req, res) => {
 
 app.get('/api/getDaily', async (req, res) => {
 	try {
+		const currentTime = new Date();
+		const currentDay = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
+
+		// If the timestamp is more than a day old, generate a new game board
+		if (!cache.daily.time || currentDay > cache.daily.time) {
+			cache.daily.board = await generateBoard(boardSize, wordSize);
+			cache.daily.time = currentDay;
+			fs.writeFileSync('dailyBoard.json', JSON.stringify(cache.daily));
+		}
+
 		res.json(cache.daily);
 	} catch (error) {
-        console.error("No gameboard available", error)
-    }
+		console.error('No gameboard available', error);
+	}
 });
 
 const boardSize = 6;
 const wordSize = 6;
-
-cron.schedule('0 0 * * *', async () => {
-	cache.daily = await generateBoard(boardSize, wordSize);
-	fs.writeFileSync('dailyBoard.json', JSON.stringify(cache.daily));
-});
 
 app.listen(PORT, host, async () => {
 	console.log(`Server listening on port ${host}:${PORT}`);
@@ -63,7 +67,9 @@ app.listen(PORT, host, async () => {
 			cache.daily = JSON.parse(data);
 		} catch (err) {
 			console.error(`Error reading file from disk: ${err}`);
-			cache.daily = await generateBoard(boardSize, wordSize);
+			cache.daily.board = await generateBoard(boardSize, wordSize);
+			const currentTime = newDate();
+			cache.daily.time = new Date(currentTime.getFullYear(), currentTime.getMonth(), currentTime.getDate());
 			fs.writeFileSync('dailyBoard.json', JSON.stringify(cache.daily));
 		}
 	}
